@@ -14,14 +14,14 @@ vectorLength = 100
 global maxLength
 maxLength = 6
 
-with open('fastText/lemmaVectors.vec', 'r') as file:
+with open('../fastText/lemmaVectors.vec', 'r') as file:
         vectors = dict()
         file.readline()
         for line in file:
                 splitLine = line.split()
                 start = len(splitLine) - vectorLength
                 try:
-                        vectors[" ".join(splitline[0:start])] = np.array(splitLine[start:]).astype(float)
+                        vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:]).astype(float)
                 except ValueError:
                         print(splitLine, len(splitLine))
 
@@ -45,13 +45,13 @@ class Model(torch.nn.Module) :
 		self.lstm = nn.LSTM(embedding_dim,hidden_dim)
 		self.linearOut = nn.Linear(hidden_dim,2)
 	def forward(self,inputs,hidden) :
-		x = self.embeddings(inputs).view(len(inputs),1,-1)
+		x = inputs.view(len(inputs),1,-1)
 		lstm_out,lstm_h = self.lstm(x,hidden)
 		x = lstm_out[-1]
 		x = self.linearOut(x)
 		x = F.log_softmax(x)
 		return x,lstm_h
-	def init_hidden(self) :
+	def init_hidden(self):
 		return (Variable(torch.zeros(1, 1, self.hidden_dim)),Variable(torch.zeros(1, 1, self.hidden_dim)))	
 
 model = Model(100,100)
@@ -66,20 +66,21 @@ print('starting training')
 
 sep = [0]*100
 
-with open("ppdbLargeFilteredTrain.txt", 'r') as ppdb:
-        for i in range(epochs):
-                avg_loss = 0.0
-        
-                for j in range(len(ppdb)//3):
+for i in range(epochs):
+	with open("ppdbLargeFilteredTrain.txt", 'r') as ppdb:
+		fileSize = int(ppdb.readline())
+		avg_loss = 0.0
+        	
+		for j in range(fileSize):
                         first = getVector(ppdb.readline()[:-1], vectors)
                         second = getVector(ppdb.readline()[:-1], vectors)
                         third = int(ppdb.readline())
 
-                        input_data = Variable(torch.Tensor(first+[sep]+second)
+                        input_data = Variable(torch.Tensor(first+[sep]+second).view(1,-1))
                         hidden = model.init_hidden()
                         y_pred,_ = model(input_data, hidden)
                         model.zero_grad()
-                        loss = loss_function(y_pred, torch.Tensor([1-third, third]))
+                        loss = loss_function(y_pred, Variable(torch.LongTensor([1-third, third])))
                         avg_loss += loss.data[0]
 
                         if j%500 == 0:
@@ -87,9 +88,10 @@ with open("ppdbLargeFilteredTrain.txt", 'r') as ppdb:
                         loss.backward()
                         optimizer.step()
 
-                torch.save(model.state_dict(), 'model' + str(i+1)+'.pth')			
-                print('the average loss after completion of %d epochs is %g'%((i+1),(avg_loss/len(data))))
-                
+		torch.save(model.state_dict(), 'model' + str(i+1)+'.pth')
+
+		print('the average loss after completion of %d epochs is %g'%((i+1),(avg_loss/len(data))))
+
 """	for idx,lines in enumerate(f) :
 		if not idx == 0 :
 			data = lines.split('\t')[2]
