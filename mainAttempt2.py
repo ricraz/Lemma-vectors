@@ -13,20 +13,18 @@ from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
 
 vectorLength = 100
-seperator = [0]*vectorLength
+separator = [0]*vectorLength
 
 
-with open('fastText/lemmaVectors.vec', 'r') as vectorFile:
+with open('../fastText/lemmaVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
                 splitLine = line.split()
                 start = len(splitLine) - vectorLength
-                try:
-                        vectors[" ".join(splitLine[0:start])] = splitLine[start:]
-                except ValueError:
-                        print(splitLine, len(splitLine))
-
+                for i in range(start, len(splitLine)):
+                        splitLine[i] = float(splitLine[i])
+                vectors[" ".join(splitLine[0:start])] = splitLine[start:]
 
 def getVector(line, vectors):
         output = []
@@ -46,11 +44,11 @@ class Model(torch.nn.Module):
                 self.lstm = nn.LSTM(embedding_dim, hidden_dim)
                 self.linearOut = nn.Linear(hidden_dim,2)
         def forward(self, inputs, hidden):
-                x = torch.Tensor(inputs).view(len(inputs),1,-1)
-                lstm_out, lstm_h = self.lstm(x, hidden)
+                #x = torch.Tensor(inputs).
+                lstm_out, lstm_h = self.lstm(inputs, hidden)
                 x = lstm_out[-1]
                 x = self.linearOut(x)
-                x = F.softmax(x)
+                x = F.log_softmax(x)
                 return x, lstm_h
         def init_hidden(self):
                 return (Variable(torch.zeros(1,1,self.hidden_dim)), Variable(torch.zeros(1,1,self.hidden_dim)))
@@ -67,12 +65,14 @@ print('starting training')
 
 for i in range(epochs) :
 	avg_loss = 0.0
+	last_avg = 0.0
 	with open('ppdbLargeFilteredTrain.txt','r') as ppdb:
-                fileSize = int(ppdb.readline())
-                for j in range(fileSize):
+		fileSize = int(ppdb.readline())
+		for j in range(fileSize):
 			data1 = getVector(ppdb.readline()[:-1], vectors)
 			data2 = getVector(ppdb.readline()[:-1], vectors)
-			input_data = Variable(torch.LongTensor(data1 + [seperator] + data2))
+			#print(data1+[seperator]+data2)
+			input_data = Variable(torch.Tensor(data1 + [separator] + data2))
 			
 			target = int(ppdb.readline())
 			target_data = Variable(torch.LongTensor([target]))
@@ -81,15 +81,39 @@ for i in range(epochs) :
 			model.zero_grad()
 			loss = loss_function(y_pred,target_data)
 			avg_loss += loss.data[0]
-			
-			if j%500 == 0 or j == 1:
-				print('epoch :%d iterations :%d loss :%g'%(i,j,loss.data[0]))
+			if j%500 == 1:
+				print('epoch : ', i, ' iterations : ',j, 'loss : ', loss.data[0],'; overall: ', str((avg_loss-last_avg)/500))
+				last_avg = avg_loss
 
-				
 			loss.backward()
 			optimizer.step()
 	torch.save(model.state_dict(), 'model' + str(i+1)+'.pth')			
-	print('the average loss after completion of %d epochs is %g'%((i+1),(avg_loss/len(f))))	
+	print('the average loss after completion of %d epochs is %g'%((i+1),(avg_loss/fileSize)))	
 
-with open('dict.pkl','wb') as f :
-	pickle.dump(obj1.word_to_idx,f)
+avg_loss = 0.0
+success = 0
+with open('ppdbLargeFilteredTest.txt','r') as ppdb:
+	fileSize = int(ppdb.readline())
+	for j in range(fileSize):
+		data1 = getVector(ppdb.readline()[:-1],vectors)
+		data2 = getVector(ppdb.readline()[:-1],vectors)
+		input_data = Variable(torch.Tensor(data1 + [separator] + data2))
+		target = int(ppdb.readline())
+		target_data = Variable(torch.LongTensor([target]))
+		hidden = model.init_hidden()
+		y_pred,_ = model(input_data,hidden)
+		model.zero_grad()
+		loss = loss_function(y_pred,target_data)
+		avg_loss += loss.data[0]
+		
+		bigger = (y_pred[0][1] > y_pred[0][0]).data.numpy()
+		if (target == 1 and bigger) or (target==0 and not bigger):
+			success += 1
+print(str(success/fileSize))
+print(str(avg_loss/fileSize))
+
+with open('lemma_model_save', 'wb') as f:
+	torch.save(model,f)
+
+print("saved")
+model.save_state_dict('filteredLemmaLSTM.pt')
