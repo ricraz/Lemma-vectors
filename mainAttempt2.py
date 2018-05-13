@@ -16,25 +16,33 @@ vectorLength = 100
 separator = [0]*vectorLength
 
 
-with open('../fastText/lemmaVectors.vec', 'r') as vectorFile:
+with open('../fastText/lemmaUntaggedPuncSkipVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
                 splitLine = line.split()
                 start = len(splitLine) - vectorLength
-                for i in range(start, len(splitLine)):
-                        splitLine[i] = float(splitLine[i])
-                vectors[" ".join(splitLine[0:start])] = splitLine[start:]
+                #for i in range(start, len(splitLine)):
+                #        splitLine[i] = float(splitLine[i])
+                vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
+
+with open('../fastText/missingLemmaUntaggedSkipVectors.txt', 'r') as missingFile:
+	for line in missingFile:
+		splitLine = line.split()
+		start = len(splitLine) - vectorLength
+		vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
 def getVector(line, vectors):
         output = []
         split = line.split()
         for word in split:
+               # tempWord = word
                 tempWord = lemmatizer.lemmatize(word.lower())
                 if tempWord in vectors:
                         output.append(vectors[tempWord])
                 else:
-                        output.append(list(np.random.uniform(-1, 1, vectorLength))) #accounting for unknown vectors
+                        print("Problem", tempWord)
+                        output.append(np.random.uniform(-1, 1, vectorLength)) #accounting for unknown vectors
         return output
 
 class Model(torch.nn.Module):
@@ -53,20 +61,20 @@ class Model(torch.nn.Module):
         def init_hidden(self):
                 return (Variable(torch.zeros(1,1,self.hidden_dim)), Variable(torch.zeros(1,1,self.hidden_dim)))
 
-model = Model(100, 100)
+model = Model(100, 300)
 
 loss_function = nn.NLLLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
 
 epochs = 1
 
-torch.save(model.state_dict(), 'model' + str(0)+'.pth')
+torch.save(model.state_dict(), 'model1' + str(0)+'.pth')
 print('starting training')
 
 for i in range(epochs) :
 	avg_loss = 0.0
 	last_avg = 0.0
-	with open('ppdbLargeFilteredTrain.txt','r') as ppdb:
+	with open('ppdbLargeFilteredShuffledTrain.txt','r') as ppdb:
 		fileSize = int(ppdb.readline())
 		for j in range(fileSize):
 			data1 = getVector(ppdb.readline()[:-1], vectors)
@@ -87,12 +95,12 @@ for i in range(epochs) :
 
 			loss.backward()
 			optimizer.step()
-	torch.save(model.state_dict(), 'model' + str(i+1)+'.pth')			
+	torch.save(model.state_dict(), 'model1' + str(i+1)+'.pth')			
 	print('the average loss after completion of %d epochs is %g'%((i+1),(avg_loss/fileSize)))	
 
 avg_loss = 0.0
 success = 0
-with open('ppdbLargeFilteredTest.txt','r') as ppdb:
+with open('ppdbLargeFilteredShuffledTest.txt','r') as ppdb:
 	fileSize = int(ppdb.readline())
 	for j in range(fileSize):
 		data1 = getVector(ppdb.readline()[:-1],vectors)
@@ -112,8 +120,7 @@ with open('ppdbLargeFilteredTest.txt','r') as ppdb:
 print(str(success/fileSize))
 print(str(avg_loss/fileSize))
 
-with open('lemma_model_save', 'wb') as f:
+with open('lemma_untagged_shuffled_model_save', 'wb') as f:
 	torch.save(model,f)
 
 print("saved")
-model.save_state_dict('filteredLemmaLSTM.pt')
