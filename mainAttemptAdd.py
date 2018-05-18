@@ -9,14 +9,18 @@ import pickle
 
 import numpy as np
 
-from nltk.stem import WordNetLemmatizer
-lemmatizer = WordNetLemmatizer()
+#from nltk.stem import WordNetLemmatizer
+#lemmatizer = WordNetLemmatizer()
 
 vectorLength = 100
-separator = [0]*vectorLength
+separator = [0]*200#(vectorLength
 
+tags = {'PDT': 'PT', '.': '.', 'VB': 'VB', ':': ':', '#': '#', 'VBN': 'VN', 'RBR': 'RR', 'PRP$': 'PR', 'DT': 'DT', 'VBZ': 'VZ', 'CC': 'CC', 'TO': 'TO', 'LS': 'LS', 'SYM': 'SM', 'RBS': 'RS', 'JJ': 'JJ', 'EX': 'EX', 'WP': 'WP', 'POS': 'PS', 'WDT': 'WT', 'VBP': 'VP', 'WRB': 'WB', 'PRP': 'PP', 'JJR': 'JR', 'VBD': 'VD', 'NNPS': 'NQ', 'RB': 'RB', '-LRB-': 'L$', 'RP': 'RP', 'JJS': 'JS', 'CD': 'CD', '-RRB-': 'R$', 'NNP': 'NP', '$': '$', 'WP$': 'WP', 'FW': 'FW', 'VBG': 'VG', "''": "''", ',': ',', 'NN': 'NN', 'UH': 'UH', 'NNS': 'NS', 'MD': 'MD', '``': '``', 'IN': 'IN'}
+inverseTags = dict()
+for key, value in tags.items():
+	inverseTags[value] = key
 
-with open('../fastText/lemmaTagSkipWordVectors.vec', 'r') as vectorFile:
+with open('../fastText/lemmaUntaggedSkipWordVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
@@ -26,21 +30,31 @@ with open('../fastText/lemmaTagSkipWordVectors.vec', 'r') as vectorFile:
                 #        splitLine[i] = float(splitLine[i])
                 vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
-"""with open('../fastText/missingLemmaUntaggedSkipVectors.txt', 'r') as missingFile:
-	for line in missingFile:
+with open('../fastText/tagSkipWordVectors.vec', 'r') as tagFile:
+	tagVectors = dict()
+	tagFile.readline()
+	for line in tagFile:
+		print(line)
 		splitLine = line.split()
 		start = len(splitLine) - vectorLength
-		vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)"""
+		tagVectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
-def getVector(line, vectors):
+def getVector(line, vectors, tagVectors):
         output = []
         split = line.split()
-        for word in split:
+        for item in split:
+                if item[-2]=="_":
+                        word = item[:-2]
+                        tag = item[-1]
+                else:
+                        word = item[:-3]
+                        tag = item[-2:] 
                 if word in vectors:
                         output.append(vectors[word])
                 else:
                         print("Problem", word)
                         output.append(np.random.uniform(-1, 1, vectorLength)) #accounting for unknown vectors
+                output[-1] = np.concatenate((output[-1],tagVectors[inverseTags[tag]]))
         return output
 
 class Model(torch.nn.Module):
@@ -59,7 +73,7 @@ class Model(torch.nn.Module):
         def init_hidden(self):
                 return (Variable(torch.zeros(1,1,self.hidden_dim)), Variable(torch.zeros(1,1,self.hidden_dim)))
 
-model = Model(100, 300)
+model = Model(200, 300)
 
 loss_function = nn.NLLLoss()
 optimizer = optim.Adam(model.parameters(), lr=1e-3)
@@ -75,10 +89,10 @@ for i in range(epochs) :
 	with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 		fileSize = int(ppdb.readline())
 		for j in range(fileSize):
-			data1 = getVector(ppdb.readline()[:-1], vectors)
-			data2 = getVector(ppdb.readline()[:-1], vectors)
+			data1 = getVector(ppdb.readline()[:-1], vectors, tagVectors)
+			data2 = getVector(ppdb.readline()[:-1], vectors, tagVectors)
 			#print(data1+[seperator]+data2)
-			input_data = Variable(torch.Tensor(data1 + [separator] + data2))
+			input_data = Variable(torch.Tensor(np.concatenate((data1,[separator], data2))))
 			
 			target = int(ppdb.readline())
 			target_data = Variable(torch.LongTensor([target]))
@@ -101,9 +115,9 @@ success = 0
 with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdb:
 	fileSize = int(ppdb.readline())
 	for j in range(fileSize):
-		data1 = getVector(ppdb.readline()[:-1],vectors)
-		data2 = getVector(ppdb.readline()[:-1],vectors)
-		input_data = Variable(torch.Tensor(data1 + [separator] + data2))
+		data1 = getVector(ppdb.readline()[:-1],vectors,tagVectors)
+		data2 = getVector(ppdb.readline()[:-1],vectors,tagVectors)
+		input_data = Variable(torch.Tensor(np.concatenate((data1,[separator], data2))))
 		target = int(ppdb.readline())
 		target_data = Variable(torch.LongTensor([target]))
 		hidden = model.init_hidden()

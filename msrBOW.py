@@ -18,16 +18,17 @@ with open('../fastText/unlemmaUntaggedPuncSkipVectors.vec', 'r') as vectorFile:
         splitLine = line.split()
         start = len(splitLine) - vectorLength
         vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
-
+"""
 with open('../fastText/missingUnlemmaUntaggedSkipVectors.txt', 'r') as missingFile:
     for line in missingFile:
-	splitLine = line.split()
-	start = len(splitLine) - vectorLength
-	vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
-
-with open('../msrUntaggedUnlemmaTrain.txt', 'r') as msrFile:
+        splitLine = line.split()
+        start = len(splitLine) - vectorLength
+        vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
+"""
+with open('ppdbLargeFilteredTrain.txt', 'r') as msrFile:
     length = int(msrFile.readline())
     x_train = []
+    y_train = []
     for i in range(length):
         first = msrFile.readline()[:-1].split()
         second = msrFile.readline()[:-1].split()
@@ -35,19 +36,22 @@ with open('../msrUntaggedUnlemmaTrain.txt', 'r') as msrFile:
         firstVector = np.zeros(vectorLength)
         secondVector = np.zeros(vectorLength)
         for item in first:
-            firstVector += vectors[item]
+            if item in vectors:
+                firstVector += vectors[item]
         for item in second:
-            secondVector += vectors[item]
+            if item in vectors:
+                secondVector += vectors[item]
         
-        x_train.append(cosineDifference(firstVector, secondVector)
+        x_train.append([cosineDistance(firstVector, secondVector)])
         y_train.append(third)
 
 model = svm.SVC(kernel='linear')
 model.fit(x_train,y_train)
 
-with open('../msrUntaggedUnlemmaTest.txt', 'r') as msrFile:
+with open('ppdbLargeFilteredLemmaTest.txt', 'r') as msrFile:
     length = int(msrFile.readline())
     x_test = []
+    y_test = []
     for i in range(length):
         first = msrFile.readline()[:-1].split()
         second = msrFile.readline()[:-1].split()
@@ -55,11 +59,13 @@ with open('../msrUntaggedUnlemmaTest.txt', 'r') as msrFile:
         firstVector = np.zeros(vectorLength)
         secondVector = np.zeros(vectorLength)
         for item in first:
-            firstVector += vectors[item]
+            if item in vectors:
+                firstVector += vectors[item]
         for item in second:
-            secondVector += vectors[item]
+            if item in vectors:
+                secondVector += vectors[item]
         
-        x_test.append(cosineDifference(firstVector, secondVector)
+        x_test.append([cosineDistance(firstVector, secondVector)])
         y_test.append(third)
 
 y_pred = model.predict(x_test)
