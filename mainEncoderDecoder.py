@@ -51,7 +51,7 @@ class EncoderLSTM(torch.nn.Module):
                 lstm_out, lstm_h = self.lstm(inputs, hidden)
                 return lstm_out, lstm_h
         def init_hidden(self):
-                return torch.zeros(1, 1, self.hidden_size, device=device)
+                return (Variable(torch.zeros(1,1,self.hidden_dim)),Variable(torch.zeros(1,1,self.hidden_dim)))
 
 class DecoderLSTM(torch.nn.Module):
         def __init__(self, embedding_dim, hidden_dim):
@@ -59,16 +59,16 @@ class DecoderLSTM(torch.nn.Module):
                 self.hidden_dim = hidden_dim
                 self.lstm = nn.LSTM(embedding_dim, hidden_dim)
                 self.linearOut = nn.Linear(hidden_dim,2)
-                self.softmax = nn.LogSoftmax(dim=1)
+                self.softmax = nn.LogSoftmax()
         def forward(self, inputs, hidden):
                 lstm_out, lstm_h = self.lstm(inputs, hidden)
                 x = lstm_out[-1]
                 x = self.linearOut(x)
                 x = F.log_softmax(x)
-                return x, lstm_hx
+                return x, lstm_h
 
 def train(input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function):
-    encoder_hidden = encoder.initHidden()
+    encoder_hidden = encoder.init_hidden()
 
     encoder_optimizer.zero_grad()
     decoder_optimizer.zero_grad()
@@ -77,44 +77,38 @@ def train(input1, input2, target_tensor, encoder, decoder, encoder_optimizer, de
     input2_length = input2.size(0)
     target_length = target_tensor.size(0)
 
-    encoder_outputs = torch.zeros(max_length, encoder.hidden_size, device=device)
-
-    loss = 0
-
     for ei in range(input1_length):
         encoder_output, encoder_hidden = encoder(
-            input1[ei], encoder_hidden)
-        encoder_outputs[ei] = encoder_output[0, 0]
+            input1[ei].view(1,1,-1), encoder_hidden)
+        #encoder_outputs[ei] = encoder_output[0, 0]
 
     decoder_hidden = encoder_hidden
 
     for di in range(input2_length):
             decoder_output, decoder_hidden = decoder(
-                input2[di], decoder_hidden)
+                input2[di].view(1,1,-1), decoder_hidden)
             
     loss = loss_function(decoder_output, target_tensor)
     
     loss.backward()
 
-    encoder_optimizer.step()
     decoder_optimizer.step()
+    encoder_optimizer.step()
 
-    return loss.item()
+    return loss.data[0]
 
 def evaluate(encoder, decoder, input1, input2):
-        with torch.no_grad():
-                input1_length = input1.size()[0]
-                input2_length = input2.size()[0]
-                encoder_hidden = encoder.initHidden()
+	input1_length = input1.size()[0]
+	input2_length = input2.size()[0]
+	encoder_hidden = encoder.initHidden()
 
-                for ei in range(input1_length):
-                        encoder_output, encoder_hidden = encoder(input1[ei], encoder_hidden)
+	for ei in range(input1_length):
+		encoder_output, encoder_hidden = encoder(input1[ei].view(1,1,-1), encoder_hidden)
 
-                decoder_hidden = encoder_hidden
+		decoder_hidden = encoder_hidden
+	for di in range(input2_length):
+		decoder_output, decoder_hidden = decoder(input2[di].view(1,1,-1), decoder_hidden)
 
-                for di in range(input2_length):
-                        decoder_output, decoder_hidden = decoder(input2[di], decoder_hidden)
-                        
         return decoder_output
 
 encoder = EncoderLSTM(inputLength, hiddenLength)
@@ -123,7 +117,6 @@ loss_function = nn.NLLLoss()
 encoder_optimizer = optim.Adam(encoder.parameters(), lr=1e-3)
 decoder_optimizer = optim.Adam(decoder.parameters(), lr=1e-3)
 
-torch.save(model.state_dict(), 'model1' + str(0)+'.pth')
 print('starting training')
 
 for i in range(epochs) :
@@ -141,14 +134,14 @@ for i in range(epochs) :
 			target = int(ppdb.readline())
 			target_tensor = Variable(torch.LongTensor([target]))
 
-                        loss = train(input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
-                        print(loss)
-			avg_loss += loss.data[0]
+			loss = train(input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
+			print(loss)
+			avg_loss += loss
 			if j%500 == 1:
-				print('epoch : ', i, ' iterations : ',j, 'loss : ', loss.data[0],'; overall: ', str((avg_loss-last_avg)/500))
+				print('epoch : ', i, ' iterations : ',j, 'loss : ', loss,'; overall: ', str((avg_loss-last_avg)/500))
 				last_avg = avg_loss
 
-	torch.save(model.state_dict(), 'model1' + str(i+1)+'.pth')			
+#	torch.save(model.state_dict(), 'model1' + str(i+1)+'.pth')			
 	print('the average loss after completion of %d epochs is %g'%((i+1),(avg_loss/fileSize)))	
 
 avg_loss = 0.0
@@ -162,11 +155,9 @@ with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdb:
 		input2 = Variable(torch.Tensor(data2))
 		target = int(ppdb.readline())
 		target_tensor = Variable(torch.LongTensor([target]))
-                output = evaluate(encoder, decoder, input1, input2)
-                loss = loss_function(output, target_tensor)
+		output = evaluate(encoder, decoder, input1, input2)
+		loss = loss_function(output, target_tensor)
 
-		y_pred,_ = model(input_data,hidden)
-		loss = loss_function(y_pred,target_data)
 		avg_loss += loss.data[0]
 		
 		bigger = (output[0][1] > output[0][0]).data.numpy()
@@ -175,7 +166,7 @@ with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdb:
 print(str(success/fileSize))
 print(str(avg_loss/fileSize))
 
-with open('lemma_untagged_shuffled_model_save', 'wb') as f:
-	torch.save(model,f)
+#with open('lemma_untagged_shuffled_model_save', 'wb') as f:
+#	torch.save(model,f)
 
-print("saved")
+#print("saved")
