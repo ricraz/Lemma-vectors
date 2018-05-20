@@ -44,7 +44,7 @@ country_NS around_IN the_DT world_NN ,_,
 be_VZ incompatible_JJ with_IN
 be_VD contrary_JJ to_TO
 1
--rrb-_NN in_IN accordance_NN with_IN paragraph_NN
+-rrb-_R$ in_IN accordance_NN with_IN paragraph_NN
 ,_, as_IN provide_VN for_IN in_IN paragraph_NN
 1
 vote_VD for_IN this_DT report_NN ,_,
@@ -344,7 +344,7 @@ be_VD also_RB necessary_JJ to_TO
 and_CC evaluation_NN of_IN
 would_MD be_VB indispensable_JJ for_IN
 0
--lrb-_JJ thousand_NS of_IN we_PP dollar_NS -rrb-_JJ
+-lrb-_L$ thousand_NS of_IN we_PP dollar_NS -rrb-_R$
 no_DT ,_, i_FW be_VP not_RB kid_VG
 0
 it_PP be_VZ all_RB right_JJ !_.
@@ -560,7 +560,7 @@ update_NS the_DT information_NN
 it_PP must_MD be_VB note_VN
 it_PP be_VD important_JJ to_TO note_VB
 1
-$_$ million_NS -rrb-_JJ
+$_$ million_NS -rrb-_R$
 it_PP be_VZ lawyer_NN shit_NN
 0
 this_DT be_VZ not_RB necessary_JJ
@@ -659,7 +659,7 @@ you_PP must_MD be_VB joke_VG
 should_MD also_RB be_VB note_VN that_IN
 yes_RB ,_, i_FW do_VP ._.
 0
--rrb-_NN to_TO reduce_VB
+-rrb-_R$ to_TO reduce_VB
 ,_, with_IN a_DT view_NN to_TO reduce_VG
 1
 of_IN these_DT regulation_NS ._.
@@ -1026,7 +1026,7 @@ shall_MD be_VB in_IN accordance_NN with_IN the_DT
 be_VP consistent_JJ with_IN the_DT
 1
 why_WB be_VZ this_DT so_RB
-of_IN non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+of_IN non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 0
 must_MD urgently_RB
 -_: yeah_NN ,_, i_FW be_VP
@@ -1182,7 +1182,7 @@ be_VZ a_DT area_NN where_WB
 be_VZ therefore_RB no_DT surprise_NN
 0
 abolish_VB capital_JJ punishment_NN
-gross_JJ domestic_JJ product_NN -lrb-_JJ gdp_NN -rrb-_NN
+gross_JJ domestic_JJ product_NN -lrb-_L$ gdp_NN -rrb-_R$
 0
 commissioner_NN for_IN human_JJ rights_NS
 play_VD a_DT active_JJ part_NN
@@ -1278,7 +1278,7 @@ and_CC let_VB we_PP not_RB forget_VB
 have_VZ to_TO be_VB note_VN
 0
 be_VP hope_VG that_IN
-and_CC communication_NN technology_NS -lrb-_JJ ict_NS -rrb-_JJ
+and_CC communication_NN technology_NS -lrb-_L$ ict_NS -rrb-_R$
 0
 yes_RB ,_, she_PP be_VZ ._.
 -_: yeah_NN ,_, i_FW be_VP out_RP
@@ -1317,7 +1317,7 @@ the_DT necessity_NN to_TO
 be_VP grow_VG increasingly_RB
 0
 non-governmental_JJ organization_NN ,_,
-nongovernmental_JJ organization_NS -lrb-_JJ ngo_NS
+nongovernmental_JJ organization_NS -lrb-_L$ ngo_NS
 1
 -_: yeah_NN ,_, you_PP do_VD
 yeah_NN ,_, he_PP be_VZ right_RB here_RB
@@ -1416,7 +1416,7 @@ to_TO take_VB a_DT active_JJ part_NN
 to_TO be_VB actively_RB engage_VN
 1
 be_VP under_IN way_NN
-,_, non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+,_, non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 0
 you_PP be_VP gon_VG na_TO be_VB just_RB fine_JJ
 be_VP do_VG fine_NN
@@ -1446,7 +1446,7 @@ yes_RB ,_, i_FW can_MD ._.
 yeah_NN ,_, you_PP do_VD ._.
 1
 be_VZ of_IN vital_JJ importance_NN
-non-governmental_JJ organization_NS -lrb-_JJ ngo_NS -rrb-_JJ ,_,
+non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$ ,_,
 0
 l_NS everything_NN okay_JJ ?_.
 -_: be_VP you_PP all_DT right_NN ?_.
@@ -1547,7 +1547,7 @@ be_VZ become_VG increasingly_RB
 yes_RB ,_, the_DT hell_NN there_EX be_VZ
 -_: yeah_NN ,_, boss_NN
 1
--rrb-_JJ enter_VN into_IN force_NN
+-rrb-_R$ enter_VD into_IN force_NN
 term_NS and_CC condition_NS of_IN
 0
 ,_, in_IN order_NN to_TO enhance_VB
@@ -1815,7 +1815,7 @@ yes_RB ,_, it_PP be_VZ ._.
 yeah_NN ,_, i_FW be_VP fine_JJ ._.
 1
 and_CC non-government_JJ organization_NS
-,_, non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+,_, non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 1
 yeah_NN ,_, it_PP do_VZ
 -_: yes_UH ,_, they_PP do_VD
@@ -2004,7 +2004,7 @@ in_IN order_NN to_TO measure_VB
 there_RB need_VZ to_TO be_VB
 1
 its_PR oda_NN
-official_JJ development_NN assistance_NN -lrb-_JJ oda_NN -rrb-_NN
+official_JJ development_NN assistance_NN -lrb-_L$ oda_NN -rrb-_R$
 1
 yeah_NN ,_, i_FW be_VP
 -_: yes_UH ,_, it_PP be_VZ
@@ -2138,7 +2138,7 @@ be_VZ become_VG more_RR and_CC more_RR
 detailed_JJ provision_NS
 in_IN order_NN to_TO be_VB allow_VN to_TO
 0
-and_CC non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+and_CC non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 of_IN minister_NS responsible_JJ for_IN
 0
 's_PS critical_JJ that_IN
@@ -2495,7 +2495,7 @@ yes_RB ,_, they_PP be_VP
 yes_RB ,_, he_PP be_VZ ._.
 be_VP of_IN vital_JJ importance_NN
 0
-$_$ 000_CD -rrb-_NN
+$_$ 000_CD -rrb-_R$
 ,_, under_IN the_DT charter_NN
 0
 therefore_RB we_PP need_VP to_TO
@@ -2619,7 +2619,7 @@ note_VD a_DT
 be_VZ concern_VN about_IN the_DT
 0
 organization_NS in_IN
-organisation_NN -lrb-_NN who_WP -rrb-_vbp_VP
+organisation_NN -lrb-_L$ who_WP -rrb-_R$
 1
 ,_, notably_RB as_IN regard_VZ
 consider_VB this_DT question_NN further_RB
@@ -2892,7 +2892,7 @@ be_VD replace_VN by_IN the_DT follow_VG paragraph_NN
 yes_RB ,_, i_FW know_VP you_PP do_VB
 0
 of_IN ensure_VG the_DT
-of_IN non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+of_IN non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 0
 concern_VG the_DT creation_NN of_IN a_DT
 on_IN the_DT establishment_NN of_IN a_DT
@@ -3041,7 +3041,7 @@ come_VD to_TO the_DT conclusion_NN that_IN
 to_TO take_VB a_DT active_JJ part_NN in_IN
 actively_RB involve_VN in_IN
 1
-$_$ thousand_CD -rrb-_NN
+$_$ thousand_CD -rrb-_R$
 come_VD to_TO see_VB you_PP
 0
 yes_RB ,_, they_PP be_VP
@@ -3552,7 +3552,7 @@ yes_RB ,_, i_FW do_VP
 -_: yeah_NN ,_, he_PP be_VZ here_RB
 0
 and_CC non_JJ -_: governmental_JJ organization_NS
-and_CC non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+and_CC non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 1
 be_VP essential_JJ to_TO
 be_VZ indispensable_JJ for_IN
@@ -3702,7 +3702,7 @@ declaration_NN in_IN accordance_NN with_IN
 why_WB ,_, what_WP be_VZ the_DT matter_NN
 0
 be_VZ important_JJ to_TO understand_VB that_DT
--lrb-_JJ $_$ 000_CD -rrb-_NN
+-lrb-_L$ $_$ 000_CD -rrb-_R$
 0
 ,_, it_PP would_MD be_VB necessary_JJ
 ,_, it_PP be_VD essential_JJ to_TO
@@ -3792,7 +3792,7 @@ yeah_NN ,_, this_DT be_VZ
 -_: yeah_NN ,_, i_FW know_VD he_PP
 0
 requirement_NS set_VN out_RP in_IN the_DT
--lrb-_JJ $_$ 000_CD ``_`` s_NS
+-lrb-_L$ $_$ 000_CD ``_`` s_NS
 0
 yeah_NN ,_, i_FW have_VP
 -_: yeah_NN ,_, we_PP do_VD
@@ -3972,7 +3972,7 @@ i-i_JJ be_VP sorry_JJ
 you_PP want_VP to_TO talk_VB
 0
 of_IN non-governmental_JJ organization_NS
-non-governmental_JJ organization_NN -lrb-_JJ ngo_NN -rrb-_NN
+non-governmental_JJ organization_NN -lrb-_L$ ngo_NN -rrb-_R$
 1
 ,_, in_IN particular_JJ child_NS
 emphasize_VD the_DT need_NN to_TO
@@ -4455,7 +4455,7 @@ particularly_RB in_IN relation_NN to_TO the_DT
 contribute_VG to_TO the_DT work_NN of_IN the_DT
 0
 recommendation_NN of_IN the_DT board_NN
-information_NN technology_NN -lrb-_vbz_VZ it_PP -rrb-_JJ
+information_NN technology_NN -lrb-_L$ it_PP -rrb-_R$
 0
 ,_, in_IN particular_JJ with_IN regard_NN to_TO
 ,_, include_VG with_IN respect_NN
@@ -4482,7 +4482,7 @@ as_IN we_PP all_DT know_VP ,_, the_DT
 as_RB be_VZ well_RB know_VN ,_,
 1
 -_: yes_UH ,_, yes_UH ,_, it_PP work_VD
--rrb-_NN to_TO protect_VB
+-rrb-_R$ to_TO protect_VB
 0
 preside_VD over_RP by_IN
 ,_, under_IN the_DT chairmanship_NN of_IN the_DT
@@ -4586,7 +4586,7 @@ take_VG into_IN account_NN the_DT principle_NN
 the_DT measure_NS provide_VN for_IN in_IN this_DT
 the_DT provision_NS of_IN the_DT present_JJ
 1
-,_, non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+,_, non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 so_RB as_IN to_TO enable_VB he_PP to_TO
 0
 ,_, particularly_RB woman_NS
@@ -4691,8 +4691,8 @@ take_VN to_TO implement_VB
 remain_VZ concerned_JJ
 be_VZ a_DT issue_NN to_TO which_WT
 0
-recommend_VN by_IN the_DT commission_NN -lrb-_NN
-recommendation_NN of_IN the_DT committee_NN -lrb-_NN
+recommend_VN by_IN the_DT commission_NN -lrb-_L$
+recommendation_NN of_IN the_DT committee_NN -lrb-_L$
 1
 -_: be_VP you_PP okay_JJ ?_.
 -_: be_VZ everything_NN all_RB right_RB ?_.
@@ -4812,7 +4812,7 @@ the_DT objective_NN of_IN which_WT be_VZ
 with_IN a_DT view_NN to_TO improve_VG
 1
 ngo_NN community_NN ,_,
-of_IN non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+of_IN non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 1
 equal_JJ opportunity_NS between_IN
 -_: this_DT be_VZ incredible_JJ
@@ -5403,7 +5403,7 @@ the_DT unite_VN nation_NS secretary_NN general_JJ kofus_NS
 secretary-general_JJ kofus_NS
 1
 organization_NS would_MD
-organisation_NN -lrb-_NN who_WP -rrb-_vbp_VP
+organisation_NN -lrb-_L$ who_WP -rrb-_R$
 1
 ,_, include_VG ,_, in_IN particular_JJ ,_,
 that_WT be_VP crucial_JJ
@@ -5742,7 +5742,7 @@ the_DT committee_NN conclude_VZ
 use_VN to_TO think_VB that_IN
 0
 ngo_NS ,_, which_WT
-of_IN non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+of_IN non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 1
 and_CC consider_VZ the_DT
 be_VZ consider_VN to_TO be_VB the_DT
@@ -6437,7 +6437,7 @@ state_NS and_CC international_JJ organization_NS
 of_IN live_VG and_CC work_VG
 to_TO live_VB and_CC work_VB
 1
--rrb-_JJ i_FW vote_VD for_IN this_DT report_NN
+-rrb-_R$ i_FW vote_VD for_IN this_DT report_NN
 all_DT right_RB ,_, yeah_IN
 0
 ,_, and_CC establish_VG
@@ -6786,7 +6786,7 @@ prevent_VB ,_, combat_NN and_CC eliminate_VB
 be_VP consistent_JJ with_IN the_DT
 0
 also_RB continue_VG
--rrb-_JJ continue_VZ to_TO be_VB
+-rrb-_R$ continue_VZ to_TO be_VB
 1
 -_: yes_UH ,_, she_PP be_VZ
 -_: yeah_NN ,_, you_PP do_VD
@@ -7079,7 +7079,7 @@ to_TO have_VB be_VN able_JJ to_TO
 to_TO play_VB a_DT active_JJ role_NN
 yeah_NN ,_, you_PP do_VP
 0
-thousand_CD of_IN dollar_NS -rrb-_JJ
+thousand_CD of_IN dollar_NS -rrb-_R$
 des_FW droits_FW de_FW l_NN `_`` homme_NN et_FW
 0
 work_NS in_IN close_JJ cooperation_NN with_IN
@@ -7799,7 +7799,7 @@ why_WB do_VD you_PP say_VP that_IN
 -_: it_PP be_VZ ok_JJ
 yeah_NN ,_, i_FW would_MD
 0
--rrb-_NN ,_, in_IN accordance_NN with_IN paragraph_NN
+-rrb-_R$ ,_, in_IN accordance_NN with_IN paragraph_NN
 continue_VZ to_TO be_VB a_DT
 0
 carry_VB out_RP investigation_NS
@@ -7973,7 +7973,7 @@ be_VB replace_VN by_IN the_DT follow_VG
 this_DT be_VZ horrible_JJ
 ,_, there_EX be_VD a_DT need_NN to_TO
 0
--rrb-_NN in_IN accordance_NN with_IN
+-rrb-_R$ in_IN accordance_NN with_IN
 submit_VN in_IN accordance_NN with_IN
 0
 be_VD regrettable_JJ that_IN ,_,
@@ -8361,7 +8361,7 @@ this_DT be_VZ everything_NN
 and_CC in_IN accordance_NN with_IN
 0
 a_DT ngo_NN
-nongovernmental_JJ organization_NS -lrb-_JJ ngo_NS
+nongovernmental_JJ organization_NS -lrb-_L$ ngo_NS
 1
 be_VZ familiar_JJ with_IN
 be_VP all_DT aware_JJ of_IN
@@ -8436,7 +8436,7 @@ be_VP invite_VN to_TO participate_VB in_IN
 yes_RB ,_, they_PP be_VP
 0
 a_DT view_NN to_TO improve_VG the_DT
-of_IN non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+of_IN non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 0
 detailed_JJ rule_NS for_IN the_DT
 ready_JJ to_TO go_VB ,_, sir_IN
@@ -8621,7 +8621,7 @@ committee_NN continue_VZ to_TO be_VB concern_VN about_IN
 will_MD be_VB need_VN to_TO
 be_VP necessary_JJ in_IN order_NN to_TO
 1
-thousand_NS of_IN dollar_NS -rrb-_JJ
+thousand_NS of_IN dollar_NS -rrb-_R$
 -_: that_WT be_VZ not_RB possible_JJ
 0
 order_NN to_TO determine_VB whether_IN
@@ -9339,7 +9339,7 @@ can_MD stay_VB
 be_VP stay_VG right_RB here_RB
 1
 express_VN they_PR appreciation_NN to_TO
--lrb-_NN in_IN thousand_NS of_IN we_PP dollar_NS
+-lrb-_L$ in_IN thousand_NS of_IN we_PP dollar_NS
 0
 in_IN develop_VG and_CC implement_VG
 yeah_NN ,_, we_PP be_VP ._.
@@ -9380,8 +9380,8 @@ yeah_NN ,_, i_FW be_VP fine_JJ
 purpose_NS of_IN determine_VG
 it_PP must_MD be_VB recognise_VN
 0
--lrb-_JJ $_$ 000_CD
--lrb-_NN in_IN thousand_CD of_IN dollar_NS
+-lrb-_L$ $_$ 000_CD
+-lrb-_L$ in_IN thousand_CD of_IN dollar_NS
 1
 thing_NS be_VP fine_JJ
 this_DT be_VZ particularly_RB so_RB
@@ -9786,7 +9786,7 @@ fall_NN within_IN the_DT purview_NN of_IN the_DT
 be_VD aware_JJ of_IN the_DT fact_NN
 0
 of_IN non-governmental_JJ organisation_NS and_CC
-non-governmental_JJ organization_NS -lrb-_JJ ngo_NS -rrb-_JJ and_CC
+non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$ and_CC
 1
 of_IN ensure_VG that_IN the_DT
 in_IN order_NN to_TO ensure_VB the_DT
@@ -9962,8 +9962,8 @@ design_VN to_TO strengthen_VB
 be_VZ well_RB know_VN
 be_VZ aware_JJ of_IN the_DT fact_NN
 1
-$_$ 000_CD -rrb-_NN
-in_IN thousand_CD of_IN dollar_NS -rrb-_JJ
+$_$ 000_CD -rrb-_R$
+in_IN thousand_CD of_IN dollar_NS -rrb-_R$
 1
 that_IN i_FW intend_VP to_TO
 that_IN it_PP be_VZ my_PR intention_NN to_TO
@@ -10044,7 +10044,7 @@ you_PP be_VP okay_JJ
 okay_JJ ,_, just_RB keep_VB relax_VN
 0
 and_CC non_JJ -_: governmental_JJ organization_NS
-and_CC non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+and_CC non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 1
 yeah_NN ,_, drover_NN
 yes_RB ,_, the_DT hell_NN there_EX be_VZ
@@ -10386,7 +10386,7 @@ of_IN develop_VG a_DT
 in_IN the_DT development_NN of_IN a_DT
 1
 ngo_NN ,_, the_DT
--rrb-_NN be_VZ responsible_JJ for_IN
+-rrb-_R$ be_VZ responsible_JJ for_IN
 0
 play_VD a_DT vital_JJ role_NN
 be_VD very_RB important_JJ
@@ -10421,7 +10421,7 @@ be_VZ a_DT essential_JJ tool_NN
 additional_JJ information_NN regard_VG
 -_: yes_UH ,_, he_PP do_VZ
 0
--lrb-_JJ $_$ 000_CD ``_`` s_NS
+-lrb-_L$ $_$ 000_CD ``_`` s_NS
 express_VB he_PR gratitude_NN to_TO
 0
 development_NN of_IN a_DT
@@ -11519,7 +11519,7 @@ in_IN order_NN to_TO fulfil_VB
 to_TO play_VB a_DT active_JJ part_NN
 detailed_JJ information_NN about_IN the_DT
 0
-of_IN non-governmental_JJ organization_NS -lrb-_JJ ngo_NS
+of_IN non-governmental_JJ organization_NS -lrb-_L$ ngo_NS
 have_VB become_VN more_RR and_CC more_RR
 0
 just_RB happy_JJ
@@ -11720,7 +11720,7 @@ be_VZ a_DT demonstration_NN of_IN
 be_VZ a_DT key_JJ part_NN
 be_VZ a_DT essential_JJ element_NN
 1
--rrb-_NN ,_, in_IN accordance_NN with_IN paragraph_NN
+-rrb-_R$ ,_, in_IN accordance_NN with_IN paragraph_NN
 as_IN provide_VN for_IN in_IN paragraph_NS
 1
 the_DT committee_NN will_MD
@@ -11913,7 +11913,7 @@ this_DT be_VZ good_JJ
 who_WP have_VD take_VN part_NN in_IN
 0
 responsibility_NN of_IN
--rrb-_NN be_VZ responsible_JJ for_IN
+-rrb-_R$ be_VZ responsible_JJ for_IN
 1
 capacity_NN to_TO prevent_VB
 take_VN a_DT active_JJ part_NN
@@ -11942,7 +11942,7 @@ yeah_NN ,_, i_FW get_VD a_DT problem_NN
 particularly_RB regard_VG
 know_VD about_IN
 0
-communication_NN technology_NS -lrb-_JJ ict_NN -rrb-_NN
+communication_NN technology_NS -lrb-_L$ ict_NN -rrb-_R$
 be_VZ of_IN crucial_JJ importance_NN
 0
 it_PP be_VD necessary_JJ to_TO
@@ -12183,7 +12183,7 @@ be_VD a_DT opportunity_NN to_TO
 be_VZ you_PR chance_NN to_TO
 1
 i_LS would_MD support_VB
--lrb-_JJ thousand_NS of_IN we_PP dollar_NS
+-lrb-_L$ thousand_NS of_IN we_PP dollar_NS
 0
 ,_, for_IN the_DT purpose_NS of_IN the_DT
 go_VG to_TO be_VB all_RB right_RB
@@ -13008,13 +13008,13 @@ order_NN to_TO promote_VB
 the_DT purpose_NN of_IN promote_VG
 1
 it_PP will_MD be_VB necessary_JJ
-,_, non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+,_, non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 0
 be_VZ a_DT key_JJ factor_NN
 in_IN this_DT regard_NN
 0
 sharon_NN be_VD
-israeli_JJ prime_JJ minister_NN ariel_NN -rrb-_JJ sharon_NN
+israeli_JJ prime_JJ minister_NN ariel_NN -rrb-_R$ sharon_NN
 1
 ,_, and_CC the_DT establishment_NN of_IN a_DT
 and_CC create_VG a_DT
@@ -13403,7 +13403,7 @@ amend_VN in_IN accordance_NN with_IN
 it_PP would_MD be_VB impossible_JJ to_TO
 be_VD difficult_JJ to_TO determine_VB
 0
-non-governmental_JJ organization_NS -lrb-_JJ ngo_NS -rrb-_JJ in_IN
+non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$ in_IN
 non_JJ -_: governmental_JJ organization_NS in_IN
 1
 be_VD participate_VG in_IN
@@ -13691,7 +13691,7 @@ have_VB the_DT chance_NN to_TO
 it_PP do_VZ ,_, however_RB
 at_IN the_DT same_JJ time_NN ,_, however_RB
 1
--lrb-_JJ $_$ 000_CD -rrb-_NN
+-lrb-_L$ $_$ 000_CD -rrb-_R$
 to_TO be_VB important_JJ
 0
 actively_RB work_VG
@@ -13995,7 +13995,7 @@ this_DT be_VZ correct_JJ
 -_: that_WT be_VZ right_NN
 1
 combat_NN trafficking_NN
-in_IN thousand_NS of_IN euro_NS -rrb-_JJ
+in_IN thousand_NS of_IN euro_NS -rrb-_R$
 0
 yes_RB ,_, they_PP do_VP
 yeah_NN ,_, he_PP do_VD
@@ -14082,7 +14082,7 @@ that_DT be_VZ a_DT very_RB good_JJ
 in_IN order_NN to_TO evaluate_VB
 0
 ,_, ngo_NS and_CC the_DT
-non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 1
 adopt_VN by_IN
 present_JJ a_DT proposal_NN
@@ -14442,7 +14442,7 @@ it_PP be_VZ very_RB difficult_JJ to_TO
 it_PP will_MD be_VB hard_JJ to_TO
 1
 and_CC particularly_RB to_TO
-thousand_NS of_IN we_PP dollar_NS -rrb-_JJ
+thousand_NS of_IN we_PP dollar_NS -rrb-_R$
 0
 service_NN that_WT be_VZ
 service_NS to_TO be_VB
@@ -14474,7 +14474,7 @@ circulate_VB this_DT letter_NN
 that_IN safeguard_NS
 it_PP be_VZ go_VG to_TO be_VB fine_JJ
 0
-country_NN -lrb-_JJ
+country_NN -lrb-_L$
 country_NS around_IN the_DT world_NN ,_,
 1
 yeah_NN ,_, he_PP be_VZ ._.
@@ -14661,7 +14661,7 @@ be_VD a_DT essential_JJ part_NN
 be_VZ critical_JJ
 1
 and_CC non_JJ -_: governmental_JJ organization_NS
-and_CC non-governmental_JJ organization_NS -lrb-_vbp_VP ngo_NS -rrb-_JJ
+and_CC non-governmental_JJ organization_NS -lrb-_L$ ngo_NS -rrb-_R$
 1
 of_IN establish_VG a_DT
 be_VZ in_IN favour_NN of_IN
@@ -14784,7 +14784,7 @@ be_VD important_JJ to_TO note_VB
 should_MD also_RB be_VB note_VN
 1
 organization_NN be_VD
-organisation_NN -lrb-_NN who_WP -rrb-_vbp_VP
+organisation_NN -lrb-_L$ who_WP -rrb-_R$
 1
 sincerely_RB hope_VN that_IN
 with_IN regard_NN to_TO the_DT
@@ -14951,7 +14951,7 @@ in_IN the_DT protection_NN and_CC promotion_NN of_IN
 improve_VB the_DT life_NS
 -_: yes_UH ,_, we_PP be_VP ._.
 0
-thousand_NS of_IN we_PP dollar_NS -rrb-_JJ
+thousand_NS of_IN we_PP dollar_NS -rrb-_R$
 be_VZ of_IN crucial_JJ importance_NN
 0
 also_RB support_VZ
@@ -15362,7 +15362,7 @@ first_RB of_IN all_DT ,_, there_EX be_VZ
 and_CC ,_, more_RR specifically_RB
 ,_, include_VG ,_, in_IN particular_JJ ,_,
 1
-recommend_VN by_IN the_DT commission_NN -lrb-_NN
+recommend_VN by_IN the_DT commission_NN -lrb-_L$
 would_MD like_VB to_TO say_VB that_IN
 0
 take_VB a_DT active_JJ part_NN
@@ -15638,8 +15638,8 @@ be_VD crucial_JJ for_IN
 that_WT will_MD be_VB able_JJ to_TO
 that_DT be_VZ capable_JJ of_IN
 1
--rrb-_JJ establish_VG a_DT
--rrb-_vb_VB the_DT establishment_NN of_IN a_DT
+-rrb-_R$ establish_VG a_DT
+-rrb-_R$ the_DT establishment_NN of_IN a_DT
 1
 need_VN by_IN the_DT
 as_IN may_MD be_VB necessary_JJ for_IN the_DT

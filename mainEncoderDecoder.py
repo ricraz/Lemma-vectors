@@ -13,9 +13,9 @@ vectorLength = 100
 separator = [0]*vectorLength
 epochs = 1
 inputLength = 100
-hiddenLength = 100
+hiddenLength = 300
 
-with open('../fastText/lemmaTagSkipWordVectors.vec', 'r') as vectorFile:
+with open('../fastText/unlemmaUntaggedPuncSkipVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
@@ -36,7 +36,7 @@ def getVector(line, vectors):
         split = line.split()
         for word in split:
                 if word in vectors:
-                        output.append(vectors[word])
+                        output.append(vectors[word])                        
                 else:
                         print("Problem", word)
                         output.append(np.random.uniform(-1, 1, vectorLength)) #accounting for unknown vectors
@@ -100,7 +100,7 @@ def train(input1, input2, target_tensor, encoder, decoder, encoder_optimizer, de
 def evaluate(encoder, decoder, input1, input2):
 	input1_length = input1.size()[0]
 	input2_length = input2.size()[0]
-	encoder_hidden = encoder.initHidden()
+	encoder_hidden = encoder.init_hidden()
 
 	for ei in range(input1_length):
 		encoder_output, encoder_hidden = encoder(input1[ei].view(1,1,-1), encoder_hidden)
@@ -108,8 +108,7 @@ def evaluate(encoder, decoder, input1, input2):
 		decoder_hidden = encoder_hidden
 	for di in range(input2_length):
 		decoder_output, decoder_hidden = decoder(input2[di].view(1,1,-1), decoder_hidden)
-
-        return decoder_output
+	return decoder_output
 
 encoder = EncoderLSTM(inputLength, hiddenLength)
 decoder = DecoderLSTM(inputLength, hiddenLength)
@@ -122,7 +121,7 @@ print('starting training')
 for i in range(epochs) :
 	avg_loss = 0.0
 	last_avg = 0.0
-	with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
+	with open('ppdbLargeFilteredTrain.txt','r') as ppdb:
 		fileSize = int(ppdb.readline())
 		for j in range(fileSize):
 			data1 = getVector(ppdb.readline()[:-1], vectors)
@@ -135,7 +134,7 @@ for i in range(epochs) :
 			target_tensor = Variable(torch.LongTensor([target]))
 
 			loss = train(input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
-			print(loss)
+			#print(loss)
 			avg_loss += loss
 			if j%500 == 1:
 				print('epoch : ', i, ' iterations : ',j, 'loss : ', loss,'; overall: ', str((avg_loss-last_avg)/500))
@@ -146,7 +145,7 @@ for i in range(epochs) :
 
 avg_loss = 0.0
 success = 0
-with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdb:
+with open('ppdbLargeFilteredTest.txt','r') as ppdb:
 	fileSize = int(ppdb.readline())
 	for j in range(fileSize):
 		data1 = getVector(ppdb.readline()[:-1],vectors)
@@ -163,7 +162,7 @@ with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdb:
 		bigger = (output[0][1] > output[0][0]).data.numpy()
 		if (target == 1 and bigger) or (target==0 and not bigger):
 			success += 1
-print(str(success/fileSize))
+print("Success: " + str(success/fileSize))
 print(str(avg_loss/fileSize))
 
 #with open('lemma_untagged_shuffled_model_save', 'wb') as f:
