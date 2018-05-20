@@ -104,8 +104,9 @@ def evaluate(encoder, decoder, input1, input2):
 
 	for ei in range(input1_length):
 		encoder_output, encoder_hidden = encoder(input1[ei].view(1,1,-1), encoder_hidden)
-
-		decoder_hidden = encoder_hidden
+	
+	decoder_hidden = encoder_hidden
+	
 	for di in range(input2_length):
 		decoder_output, decoder_hidden = decoder(input2[di].view(1,1,-1), decoder_hidden)
 	return decoder_output
