@@ -15,7 +15,7 @@ epochs = 1
 inputLength = 100
 hiddenLength = 300
 
-with open('../fastText/unlemmaUntaggedPuncSkipVectors.vec', 'r') as vectorFile:
+with open('../fastText/unlemmaTagSkipWordVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
