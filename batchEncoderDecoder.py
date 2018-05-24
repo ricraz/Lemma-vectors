@@ -6,6 +6,7 @@ from torch.autograd import Variable
 from torch import optim
 import torch.nn.functional as F
 import pickle
+import random
 
 import numpy as np
 
@@ -69,18 +70,11 @@ class DecoderLSTM(torch.nn.Module):
                 x = F.log_softmax(x)
                 return x, lstm_h
 
-def train(inputs, batchSize, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function):
-    
-    zipped = zip(*inputs)
-    input1 = Variable(torch.Tensor(next(zipped))
-    for 
-    input2 = Variable(torch.Tensor(next(zipped))
-    target_tensor = Variable(torch.LongTensor(next(zipped)))
-
+def train(accum, input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function):
     encoder_hidden = encoder.init_hidden()
-
-    encoder_optimizer.zero_grad()
-    decoder_optimizer.zero_grad()
+    if accum == 0:
+        encoder_optimizer.zero_grad()
+        decoder_optimizer.zero_grad()
 
     input1_length = input1.size(0)
     input2_length = input2.size(0)
@@ -88,21 +82,21 @@ def train(inputs, batchSize, encoder, decoder, encoder_optimizer, decoder_optimi
 
     for ei in range(input1_length):
         encoder_output, encoder_hidden = encoder(
-            input1[ei].view(1,batchSize,-1), encoder_hidden)
+            input1[ei].view(1,1,-1), encoder_hidden)
         #encoder_outputs[ei] = encoder_output[0, 0]
 
     decoder_hidden = encoder_hidden
 
     for di in range(input2_length):
             decoder_output, decoder_hidden = decoder(
-                input2[di].view(1,batchSize,-1), decoder_hidden)
-            
+                input2[di].view(1,1,-1), decoder_hidden)
+
     loss = loss_function(decoder_output, target_tensor)
     
     loss.backward()
-
-    decoder_optimizer.step()
-    encoder_optimizer.step()
+    if accum == batchSize-1:
+        encoder_optimizer.step()
+        decoder_optimizer.step()
 
     return loss.data[0]
 
@@ -139,20 +133,30 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 
 	for i in range(epochs):
 		avg_loss = 0.0
-		j = 0
-		while (j+1)*batchSize <= fileSize:
-			loss = train(allLines[j*batchSize, batchSize, (j+1)*batchSize], encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
-			avg_loss += loss	
-			print('epoch: " ', i, ' batch: ', j, ' loss: ', loss, ' overall: ', str(avg_loss/(j*batchSize)))
-			j += 1
+		current_loss = 0.0
+		for j in range(fileSize):
+			input1 = Variable(torch.Tensor(allLines[j][0]))
+			input2 = Variable(torch.Tensor(allLines[j][1]))
 
-		if j*batchSize < fileSize:
-			loss = train(allLines[j*batchSize:], fileSize - j*batchSize, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
+			target_tensor = Variable(torch.LongTensor([allLines[j][2]]))
+			loss = train(j%batchSize, input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
+
 			avg_loss += loss
-		print('the average loss after completion of %d epochs is %g'%(j, avg_loss/fileSize))
+			current_loss += loss
+
+			if j%batchSize==batchSize-1:
+				print('epoch : ', i, ', batch : ',j//batchSize, ', loss : ', current_loss/batchSize,', overall: ', avg_loss/j)
+				current_loss = 0
+
+                encoder_optimizer.step()
+                decoder_optimizer.step()
+		random.shuffle(allLines)
 
 avg_loss = 0.0
-success = 0
+true_Positives = 0
+false_Positives = 0
+false_Negatives = 0
+true_Negatives = 0
 with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdb:
 	fileSize = int(ppdb.readline())
 	for j in range(fileSize):
@@ -168,12 +172,22 @@ with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdb:
 		avg_loss += loss.data[0]
 		
 		bigger = (output[0][1] > output[0][0]).data.numpy()
-		if (target == 1 and bigger) or (target==0 and not bigger):
-			success += 1
-print("Success: " + str(success/fileSize))
-print(str(avg_loss/fileSize))
+		if target==1:
+                	if bigger:
+                                true_Positives += 1
+                        else:
+                                false_Negatives += 1
 
-#with open('lemma_untagged_shuffled_model_save', 'wb') as f:
-#	torch.save(model,f)
+                else:
+                        if bigger:
+                                false_Positives += 1
+                        else:
+                                true_Negatives += 1
 
-#print("saved")
+precision = true_Positives/(true_Positives+false_Positives)
+recall = true_Positives/(true_Positives+false_Negatives)
+f1 = 2 * precision*recall/(precision+recall)
+print('Accuracy: ', (true_Positives + true_Negatives)/fileSize)
+print('Precision: ', precision)
+print('Recall: ', recall)
+print('F1: ', f1)
