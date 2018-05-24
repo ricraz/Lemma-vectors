@@ -49,24 +49,14 @@ class EncoderLSTM(torch.nn.Module):
                 self.hidden_dim = hidden_dim
                 self.lstm = nn.LSTM(embedding_dim, hidden_dim)
         def forward(self, inputs, hidden):
-                lstm_out, lstm_h = self.lstm(inputs, hidden)
+                print(inputs.size())
+                print(hidden[0].size())
+                print(hidden[1].size())
+                print("Threee down")
+                lstm_out, lstm_h = self.lstm(inputs.view(1,1,-1), hidden)
                 return lstm_out, lstm_h
-        def init_hidden(self)
-                return torch.zeros(1, 1, self.hidden_size)
-
-class DecoderLSTM(torch.nn.Module):
-        def __init__(self, embedding_dim, hidden_dim):
-                super(DecoderLSTM,self).__init__()
-                self.hidden_dim = hidden_dim
-                self.lstm = nn.LSTM(embedding_dim, hidden_dim)
-                self.linearOut = nn.Linear(hidden_dim,2)
-                self.softmax = nn.LogSoftmax()
-        def forward(self, inputs, hidden):
-                lstm_out, lstm_h = self.lstm(inputs, hidden)
-                x = lstm_out[-1]
-                x = self.linearOut(x)
-                x = F.log_softmax(x)
-                return x, lstm_h
+        def init_hidden(self):
+                return (Variable(torch.zeros(1,1,self.hidden_dim)),Variable(torch.zeros(1,1,self.hidden_dim)))
 
 class AttentionDecoderLSTM(torch.nn.Module):
     def __init__(self, embedding_dim, hidden_dim, dropout_p=0.1, max_length = MAX_LENGTH):
@@ -75,25 +65,28 @@ class AttentionDecoderLSTM(torch.nn.Module):
             self.dropout_p = dropout_p
             self.max_length = max_length
 
-            self.attention = nn.Linear(hidden_dim*2, max_length)
-            self.attention_combine = nn.Linear(hidden_dim*2, self.hidden_dim)
+            self.attention = nn.Linear(hidden_dim+embedding_dim, max_length)
+            self.attention_combine = nn.Linear(hidden_dim+embedding_dim, self.hidden_dim)
             self.dropout = nn.Dropout(self.dropout_p)
-            self.lstm = nn.LSTM(embedding_dim, hidden_dim)
+            self.lstm = nn.LSTM(hidden_dim, hidden_dim)
             self.linearOut = nn.Linear(hidden_dim, 2)
             self.softmax = nn.LogSoftmax()
 
     def forward(self,inputs,hidden,encoder_outputs):
-            embedded = self.dropout(inputs)
-            attention_weights = F.softmax(
-                self.attention(torch.cat((embedded[0],hidden[0]),1)), dim=1)
-            attention_applied = torch.bmm(attention_weights.unsqueeze(0) encoder_outputs.unsqueeze(0))
-
-            output = torch.cat((embedded[0], attention_applied[0]),1)
-            output = self.attention_combine(output).unsqueeze(0)
+            embedded = inputs.view(1,1,-1)
+            attention_weights = F.softmax(self.attention(torch.cat((embedded,hidden[0]),dim=2)))
+            encoderThing = Variable(encoder_outputs.view(1,MAX_LENGTH,-1))
+            attention_applied = torch.bmm(attention_weights, encoderThing)
+            output = torch.cat((embedded, attention_applied[0].unsqueeze(0)),dim=2)
+            output = self.attention_combine(output)
             output = F.relu(output)
+            print(output.size())
+            print(hidden[0].size())
+            print(hidden[1].size())
+            print("three more")
             output, hidden = self.lstm(output, hidden)
-
-            output = F.log_softmax(self.out(output[0]), dim=1)
+            print("LSTM WORKED!")
+            output = F.log_softmax(self.linearOut(output[-1]))
             return output, hidden, attention_weights
 
     def init_hidden(self):
@@ -110,18 +103,18 @@ def train(input1, input2, target_tensor, encoder, decoder, encoder_optimizer, de
     target_length = target_tensor.size(0)
 
     encoder_outputs = torch.zeros(max_length, encoder.hidden_dim)
-    loss = 0
 
     for ei in range(input1_length):
         encoder_output, encoder_hidden = encoder(
-            input1[ei].view(1,1,-1), encoder_hidden)
-        encoder_outputs[ei] = encoder_output[0, 0]
+            input1[ei], encoder_hidden)
+        encoder_outputs[ei] = encoder_output.data[0, 0]
 
     decoder_hidden = encoder_hidden
 
     for di in range(input2_length):
             decoder_output, decoder_hidden, decoder_attention = decoder(
-                input2[di].view(1,1,-1), decoder_hidden, encoder)outputs)
+                input2[di], decoder_hidden, encoder_outputs)
+            print(di)
             
     loss = loss_function(decoder_output, target_tensor)
     
@@ -140,7 +133,7 @@ def evaluate(encoder, decoder, input1, input2, max_length = MAX_LENGTH):
 	encoder_outputs = torch.zeros(max_length, encoder.hidden_dim)
 
 	for ei in range(input1_length):
-		encoder_output, encoder_hidden = encoder(input1[ei].view(1,1,-1), encoder_hidden)
+		encoder_output, encoder_hidden = encoder(input1[ei], encoder_hidden)
 		encoder_outputs[ei] += encoder_output[0,0]
 	
 	decoder_hidden = encoder_hidden
@@ -148,7 +141,7 @@ def evaluate(encoder, decoder, input1, input2, max_length = MAX_LENGTH):
 	
 	for di in range(input2_length):
 		decoder_output, decoder_hidden, decoder_attention = decoder(
-                    input2[di].view(1,1,-1), decoder_hidden, encoder_outputs)
+                    input2[di], decoder_hidden, encoder_outputs)
 		decoder_attentions[di] = decoder_attention.data
 
 	return decoder_output

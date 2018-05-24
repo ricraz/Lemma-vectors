@@ -69,11 +69,18 @@ class DecoderLSTM(torch.nn.Module):
                 x = F.log_softmax(x)
                 return x, lstm_h
 
-def train(accum, input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function):
+def train(inputs, batchSize, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function):
+    
+    zipped = zip(*inputs)
+    input1 = Variable(torch.Tensor(next(zipped))
+    for 
+    input2 = Variable(torch.Tensor(next(zipped))
+    target_tensor = Variable(torch.LongTensor(next(zipped)))
+
     encoder_hidden = encoder.init_hidden()
-    if accum == 0:
-        encoder_optimizer.zero_grad()
-        decoder_optimizer.zero_grad()
+
+    encoder_optimizer.zero_grad()
+    decoder_optimizer.zero_grad()
 
     input1_length = input1.size(0)
     input2_length = input2.size(0)
@@ -81,21 +88,21 @@ def train(accum, input1, input2, target_tensor, encoder, decoder, encoder_optimi
 
     for ei in range(input1_length):
         encoder_output, encoder_hidden = encoder(
-            input1[ei].view(1,1,-1), encoder_hidden)
+            input1[ei].view(1,batchSize,-1), encoder_hidden)
         #encoder_outputs[ei] = encoder_output[0, 0]
 
     decoder_hidden = encoder_hidden
 
     for di in range(input2_length):
             decoder_output, decoder_hidden = decoder(
-                input2[di].view(1,1,-1), decoder_hidden)
-
+                input2[di].view(1,batchSize,-1), decoder_hidden)
+            
     loss = loss_function(decoder_output, target_tensor)
     
     loss.backward()
-    if accum == batchSize-1:
-        encoder_optimizer.step()
-        decoder_optimizer.step()
+
+    decoder_optimizer.step()
+    encoder_optimizer.step()
 
     return loss.data[0]
 
@@ -121,30 +128,28 @@ decoder_optimizer = optim.Adam(decoder.parameters(), lr=1e-3)
 
 print('starting training')
 
-for i in range(epochs) :
-	avg_loss = 0.0
-	last_avg = 0.0
-	with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
-		fileSize = int(ppdb.readline())
-		for j in range(fileSize):
-			data1 = getVector(ppdb.readline()[:-1], vectors)
-			data2 = getVector(ppdb.readline()[:-1], vectors)
-			#print(data1+[seperator]+data2)
-			input1 = Variable(torch.Tensor(data1))
-			input2 = Variable(torch.Tensor(data2))
-			
-			target = int(ppdb.readline())
-			target_tensor = Variable(torch.LongTensor([target]))
+with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
+	fileSize = int(ppdb.readLine())
+	allLines = []
+	for i in range(fileSize):
+		allLines.append([])
+		allLines[-1].append(getVector(ppdb.readline()[:-1],vectors))
+		allLines[-1].append(getVector(ppdb.readline()[:-1],vectors))
+		allLines[-1].append(int(ppdb.readline()))
 
-			loss = train(j%batchSize, input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
-			#print(loss)
+	for i in range(epochs):
+		avg_loss = 0.0
+		j = 0
+		while (j+1)*batchSize <= fileSize:
+			loss = train(allLines[j*batchSize, batchSize, (j+1)*batchSize], encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
+			avg_loss += loss	
+			print('epoch: " ', i, ' batch: ', j, ' loss: ', loss, ' overall: ', str(avg_loss/(j*batchSize)))
+			j += 1
+
+		if j*batchSize < fileSize:
+			loss = train(allLines[j*batchSize:], fileSize - j*batchSize, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
 			avg_loss += loss
-			if j%batchSize==batchSize-1:
-				print('epoch : ', i, ' iterations : ',j, 'loss : ', loss,'; overall: ', str((avg_loss-last_avg)/500))
-				last_avg = avg_loss
-
-#	torch.save(model.state_dict(), 'model1' + str(i+1)+'.pth')			
-	print('the average loss after completion of %d epochs is %g'%((i+1),(avg_loss/fileSize)))	
+		print('the average loss after completion of %d epochs is %g'%(j, avg_loss/fileSize))
 
 avg_loss = 0.0
 success = 0
