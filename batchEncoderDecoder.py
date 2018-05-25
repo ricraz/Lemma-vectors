@@ -15,8 +15,9 @@ inputLength = 100
 hiddenLength = 300
 batchSize = 128
 randomSeed = 0
-
+torch.manual_seed(randomSeed)
 resultsFile = open('results.txt', 'w')
+resultsFile.write(str(randomSeed))
 
 with open('../fastText/lemmaTagSkipWordVectors.vec', 'r') as vectorFile:
         vectors = dict()
@@ -125,7 +126,7 @@ def testModel(dataFile, encoder, decoder, lossFunction):
 		target_tensor = Variable(torch.LongTensor([target]))
 		output = evaluate(encoder, decoder, input1, input2)
 		loss = lossFunction(output, target_tensor)
-	       	avg_loss += loss.data[0]
+		avg_loss += loss.data[0]
 
 		bigger = (output[0][1] > output[0][0]).data.numpy()
 		if target==1:
@@ -133,7 +134,7 @@ def testModel(dataFile, encoder, decoder, lossFunction):
 				true_Positives += 1
 			else:
 				false_Negatives += 1
-	    	else:
+		else:
 			if bigger:
 				false_Positives += 1
 			else:
@@ -170,11 +171,11 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 	trainingSize = fileSize - validationSize
 	trainingSet, validationSet = trainingSet[:trainingSize],trainingSet[trainingSize:]
 
-        validations = [0]
+	validations = [0]
         
 	for i in range(epochs):
-            	encoder_optimizer.zero_grad()
-                decoder_optimizer.zero_grad()
+		encoder_optimizer.zero_grad()
+		decoder_optimizer.zero_grad()
 		avg_loss = 0.0
 		current_loss = 0.0
 		losses = []
@@ -182,7 +183,7 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 			input1 = Variable(torch.Tensor(trainingSet[j][0]))
 			input2 = Variable(torch.Tensor(trainingSet[j][1]))
 
-			target_tensor = Variable(torch.LongTensor([trainingSize[j][2]]))
+			target_tensor = Variable(torch.LongTensor([trainingSet[j][2]]))
 			loss = train(j%batchSize, input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, lossFunction)
 
 			avg_loss += loss.data[0]
@@ -195,26 +196,26 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 				encoder_optimizer.step()
 				decoder_optimizer.step()
 				encoder_optimizer.zero_grad()
-                                decoder_optimizer.zero_grad()
+				decoder_optimizer.zero_grad()
 
 				losses = []
-				if j % 500 == 1:
-					print('epoch : ', i, ', batch : ',j//batchSize, ', loss : ', current_loss/500,', overall: ', avg_loss/j)
-					current_loss = 0
+				print('epoch : ', i, ', batch : ',j//batchSize, ', loss : ', current_loss/500,', overall: ', avg_loss/j)
+				current_loss = 0
+
 		random.shuffle(allLines)
-                outfile.write('epoch ' + str(i+1) + ' validation scores:')
+		outfile.write('epoch ' + str(i+1) + ' validation scores:')
 		currentValidation = testModel(validationSet, encoder, decoder, lossFunction)
 
-                if currentValidation >= validations[-1]:
-                        with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdbTest:
-                                testFileSize = int(ppdbTest.readline())
-                                testSet = []
-                                for k in range(testFileSize):
-                                        testSet.append([])
-                                	testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
-                                	testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
-                                	testSet[-1].append(int(ppdbTest.readline()))
-                                outfile.write('epoch ' + str(i+1) + ' test scores:')
-                                testModel(validationSet, encoder, decoder, lossFunction)
-                validations.append(currentValidation)
+		if currentValidation >= validations[-1]:
+			with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdbTest:
+				testFileSize = int(ppdbTest.readline())
+				testSet = []
+				for k in range(testFileSize):
+					testSet.append([])
+					testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
+					testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
+					testSet[-1].append(int(ppdbTest.readline()))
+				outfile.write('epoch ' + str(i+1) + ' test scores:')
+				testModel(validationSet, encoder, decoder, lossFunction)
+		validations.append(currentValidation)
 resultsFile.close()
