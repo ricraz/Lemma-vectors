@@ -17,7 +17,7 @@ count = 0
 
 missingWords = set()
 with open('missingPPDBLemmaTaggedWords.txt', 'w') as writeFile:
-        with open('../ppdbLargeFilteredLemmaTagTrain.txt', 'r') as wordFile:
+        with open('ppdbLargeFilteredLemmaTagTrain.txt', 'r') as wordFile:
                 size = int(wordFile.readline())
                 for i in range(size):
                         splits = wordFile.readline()[:-1].split()
@@ -25,21 +25,21 @@ with open('missingPPDBLemmaTaggedWords.txt', 'w') as writeFile:
                                 if tempWord not in vectors and tempWord not in missingWords:
                                         missingWords.add(tempWord)
                                         writeFile.write(tempWord + '\n')
-                                    	if count % 1000 == 0:
-                    				print(tempWord)
-            				count += 1
-            		                        splits = wordFile.readline()[:-1].split()
+                                        if count % 1000 == 0:
+                                                print(tempWord)
+                                        count += 1
+            		
                         splits = wordFile.readline()[:-1].split()
                         for tempWord in splits:
                                 if tempWord not in vectors and tempWord not in missingWords:
                                         missingWords.add(tempWord)
                                         writeFile.write(tempWord + '\n')
-                                    	if count % 1000 == 0:
-                    				print(tempWord)
-            				count += 1
-            		wordFile.readline()
+                                        if count % 1000 == 0:
+                                                print(tempWord)
+                                        count += 1
+                        wordFile.readline()
 
-        with open('../ppdbLargeFilteredLemmaTagTest.txt', 'r') as wordFile:
+        with open('ppdbLargeFilteredLemmaTagTest.txt', 'r') as wordFile:
                 size = int(wordFile.readline())
                 for i in range(size):
                         splits = wordFile.readline()[:-1].split()
@@ -47,16 +47,16 @@ with open('missingPPDBLemmaTaggedWords.txt', 'w') as writeFile:
                                 if tempWord not in vectors and tempWord not in missingWords:
                                         missingWords.add(tempWord)
                                         writeFile.write(tempWord + '\n')
-                                    	if count % 1000 == 0:
-                    				print(tempWord)
-            				count += 1
-            		                        splits = wordFile.readline()[:-1].split()
+                                        if count % 1000 == 0:
+                                                print(tempWord)
+                                        count += 1
+
                         splits = wordFile.readline()[:-1].split()
                         for tempWord in splits:
                                 if tempWord not in vectors and tempWord not in missingWords:
                                         missingWords.add(tempWord)
                                         writeFile.write(tempWord + '\n')
-                                    	if count % 1000 == 0:
-                    				print(tempWord)
-            				count += 1
-            		wordFile.readline()
+                                        if count % 1000 == 0:
+                                                print(tempWord)
+                                        count += 1
+                        wordFile.readline()

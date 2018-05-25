@@ -29,11 +29,12 @@ with open('../fastText/lemmaTagSkipWordVectors.vec', 'r') as vectorFile:
                 #        splitLine[i] = float(splitLine[i])
                 vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
-"""with open('../fastText/missingLemmaUntaggedSkipVectors.txt', 'r') as missingFile:
+with open('../fastText/missingLemmaTagVectors.txt', 'r') as missingFile:
 	for line in missingFile:
 		splitLine = line.split()
 		start = len(splitLine) - vectorLength
-		vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)"""
+		if " ".join(splitLine[0:start]) not in vectors:
+			vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
 def getVector(line, vectors):
         output = []
@@ -43,7 +44,8 @@ def getVector(line, vectors):
                         output.append(vectors[word])                        
                 else:
                         print("Problem", word)
-                        output.append(np.random.uniform(-1, 1, vectorLength)) #accounting for unknown vectors
+                        raise(ValueError)
+                        #output.append(np.random.uniform(-1, 1, vectorLength)) #accounting for unknown vectors
         return output
 
 class EncoderLSTM(torch.nn.Module):
@@ -152,7 +154,7 @@ def testModel(dataFile, encoder, decoder, lossFunction):
 
 encoder = EncoderLSTM(inputLength, hiddenLength)
 decoder = DecoderLSTM(inputLength, hiddenLength)
-lossFunction = nn.NLLLoss()
+lossFunction = nn.NLLLoss(size_average=False)
 encoder_optimizer = optim.Adam(encoder.parameters(), lr=1e-3)
 decoder_optimizer = optim.Adam(decoder.parameters(), lr=1e-3)
 
@@ -202,8 +204,8 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 				print('epoch : ', i, ', batch : ',j//batchSize, ', loss : ', current_loss/500,', overall: ', avg_loss/j)
 				current_loss = 0
 
-		random.shuffle(allLines)
-		outfile.write('epoch ' + str(i+1) + ' validation scores:')
+		random.shuffle(trainingSet)
+		resultsFile.write('epoch ' + str(i+1) + ' validation scores:')
 		currentValidation = testModel(validationSet, encoder, decoder, lossFunction)
 
 		if currentValidation >= validations[-1]:
@@ -215,7 +217,7 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 					testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
 					testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
 					testSet[-1].append(int(ppdbTest.readline()))
-				outfile.write('epoch ' + str(i+1) + ' test scores:')
+				resultsFile.write('epoch ' + str(i+1) + ' test scores:')
 				testModel(validationSet, encoder, decoder, lossFunction)
 		validations.append(currentValidation)
 resultsFile.close()
