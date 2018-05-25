@@ -5,18 +5,18 @@ import torch.nn as nn
 from torch.autograd import Variable
 from torch import optim
 import torch.nn.functional as F
-import pickle
 import random
 
 import numpy as np
 
 vectorLength = 100
-separator = [0]*vectorLength
-epochs = 1
+epochs = 15
 inputLength = 100
 hiddenLength = 300
-batchSize = 1
+batchSize = 128
 randomSeed = 0
+
+resultsFile = open('results.txt', 'w')
 
 with open('../fastText/lemmaTagSkipWordVectors.vec', 'r') as vectorFile:
         vectors = dict()
@@ -72,9 +72,6 @@ class DecoderLSTM(torch.nn.Module):
 
 def train(accum, input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, lossFunction):
     encoder_hidden = encoder.init_hidden()
-    if accum == 0:
-        encoder_optimizer.zero_grad()
-        decoder_optimizer.zero_grad()
 
     input1_length = input1.size(0)
     input2_length = input2.size(0)
@@ -114,6 +111,44 @@ def evaluate(encoder, decoder, input1, input2):
 		decoder_output, decoder_hidden = decoder(input2[di].view(1,1,-1), decoder_hidden)
 	return decoder_output
 
+def testModel(dataFile, encoder, decoder, lossFunction):
+	avg_loss = 0.0
+	true_Positives = 0
+	false_Positives = 0
+	false_Negatives = 0
+	true_Negatives = 0
+	fileSize = len(dataFile)
+	for j in range(fileSize):
+		input1 = Variable(torch.Tensor(dataFile[j][0]))
+		input2 = Variable(torch.Tensor(dataFile[j][1]))
+		target = dataFile[j][2]
+		target_tensor = Variable(torch.LongTensor([target]))
+		output = evaluate(encoder, decoder, input1, input2)
+		loss = lossFunction(output, target_tensor)
+	       	avg_loss += loss.data[0]
+
+		bigger = (output[0][1] > output[0][0]).data.numpy()
+		if target==1:
+			if bigger:
+				true_Positives += 1
+			else:
+				false_Negatives += 1
+	    	else:
+			if bigger:
+				false_Positives += 1
+			else:
+				true_Negatives += 1
+
+	precision = true_Positives/(true_Positives+false_Positives)
+	recall = true_Positives/(true_Positives+false_Negatives)
+	f1 = 2 * precision*recall/(precision+recall)
+	resultsFile.write('Average loss: ' + str(avg_loss/fileSize))
+	resultsFile.write('Accuracy: ' + str((true_Positives + true_Negatives)/fileSize))
+	#resultsFile.write('Precision: ', precision)
+        #resultsFile.write('Recall: ', recall)
+	resultsFile.write('F1: ' + str(f1))
+	return f1
+
 encoder = EncoderLSTM(inputLength, hiddenLength)
 decoder = DecoderLSTM(inputLength, hiddenLength)
 lossFunction = nn.NLLLoss()
@@ -124,7 +159,7 @@ print('starting training')
 
 with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 	fileSize = int(ppdb.readline())
-	traininSet = []
+	trainingSet = []
 	for i in range(fileSize):
 		trainingSet.append([])
 		trainingSet[-1].append(getVector(ppdb.readline()[:-1],vectors))
@@ -135,7 +170,11 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 	trainingSize = fileSize - validationSize
 	trainingSet, validationSet = trainingSet[:trainingSize],trainingSet[trainingSize:]
 
+        validations = [0]
+        
 	for i in range(epochs):
+            	encoder_optimizer.zero_grad()
+                decoder_optimizer.zero_grad()
 		avg_loss = 0.0
 		current_loss = 0.0
 		losses = []
@@ -155,49 +194,27 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 				batchLoss.backward()
 				encoder_optimizer.step()
 				decoder_optimizer.step()
+				encoder_optimizer.zero_grad()
+                                decoder_optimizer.zero_grad()
+
 				losses = []
 				if j % 500 == 1:
 					print('epoch : ', i, ', batch : ',j//batchSize, ', loss : ', current_loss/500,', overall: ', avg_loss/j)
 					current_loss = 0
 		random.shuffle(allLines)
+                outfile.write('epoch ' + str(i+1) + ' validation scores:')
+		currentValidation = testModel(validationSet, encoder, decoder, lossFunction)
 
-def testModel(
-		avg_loss = 0.0
-		true_Positives = 0
-		false_Positives = 0
-		false_Negatives = 0
-		true_Negatives = 0
-		with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdb:
-			testFileSize = int(ppdb.readline())
-			for j in range(testFileSize):
-				data1 = getVector(ppdb.readline()[:-1],vectors)
-				data2 = getVector(ppdb.readline()[:-1],vectors)
-				input1 = Variable(torch.Tensor(data1))
-				input2 = Variable(torch.Tensor(data2))
-				target = int(ppdb.readline())
-				target_tensor = Variable(torch.LongTensor([target]))
-				output = evaluate(encoder, decoder, input1, input2)
-				loss = lossFunction(output, target_tensor)
-
-				avg_loss += loss.data[0]
-		
-				bigger = (output[0][1] > output[0][0]).data.numpy()
-				if target==1:
-					if bigger:
-						true_Positives += 1
-					else:
-						false_Negatives += 1
-
-				else:
-					if bigger:
-						false_Positives += 1
-					else:
-						true_Negatives += 1
-
-		precision = true_Positives/(true_Positives+false_Positives)
-		recall = true_Positives/(true_Positives+false_Negatives)
-		f1 = 2 * precision*recall/(precision+recall)
-		print('Accuracy: ', (true_Positives + true_Negatives)/fileSize)
-		print('Precision: ', precision)
-		print('Recall: ', recall)
-		print('F1: ', f1)
+                if currentValidation >= validations[-1]:
+                        with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdbTest:
+                                testFileSize = int(ppdbTest.readline())
+                                testSet = []
+                                for k in range(testFileSize):
+                                        testSet.append([])
+                                	testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
+                                	testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
+                                	testSet[-1].append(int(ppdbTest.readline()))
+                                outfile.write('epoch ' + str(i+1) + ' test scores:')
+                                testModel(validationSet, encoder, decoder, lossFunction)
+                validations.append(currentValidation)
+resultsFile.close()
