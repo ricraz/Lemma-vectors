@@ -6,8 +6,8 @@ nlp = StanfordCoreNLP(annotators=annotators, options = {'openie.resolve_coref':T
 
 tags = {'PDT': 'PT', '.': '.', 'VB': 'VB', ':': ':', '#': '#', 'VBN': 'VN', 'RBR': 'RR', 'PRP$': 'PR', 'DT': 'DT', 'VBZ': 'VZ', 'CC': 'CC', 'TO': 'TO', 'LS': 'LS', 'SYM': 'SM', 'RBS': 'RS', 'JJ': 'JJ', 'EX': 'EX', 'WP': 'WP', 'POS': 'PS', 'WDT': 'WT', 'VBP': 'VP', 'WRB': 'WB', 'PRP': 'PP', 'JJR': 'JR', 'VBD': 'VD', 'NNPS': 'NQ', 'RB': 'RB', '-LRB-': 'L$', 'RP': 'RP', 'JJS': 'JS', 'CD': 'CD', '-RRB-': 'R$', 'NNP': 'NP', '$': '$', 'WP$': 'WP', 'FW': 'FW', 'VBG': 'VG', "''": "''", ',': ',', 'NN': 'NN', 'UH': 'UH', 'NNS': 'NS', 'MD': 'MD', '``': '``', 'IN': 'IN'}
 
-with open('ppdbLargeFilteredTrain.txt', 'r') as source:
-	with open('ppdbLargeFilteredUnlemmaTagTrain.txt', 'w') as writeFile:
+with open('ppdbLargeFilteredTest.txt', 'r') as source:
+	with open('ppdbLargeFilteredUnlemmaTagTest.txt', 'w') as writeFile:
 		with open('ppdbLargeFilteredLemmaTrain2.txt', 'w') as writeFile2:
 			length = source.readline()
 			writeFile.write(length)

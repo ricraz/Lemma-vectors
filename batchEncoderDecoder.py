@@ -10,14 +10,15 @@ import random
 import numpy as np
 
 vectorLength = 100
-epochs = 15
+epochs = 50
 inputLength = 100
 hiddenLength = 300
-batchSize = 128
+batchSize = 32
 randomSeed = 0
 torch.manual_seed(randomSeed)
-resultsFile = open('results.txt', 'w')
-resultsFile.write(str(randomSeed))
+resultsFile = open('lemmaTagWordResults2.txt', 'w')
+resultsFile.write('Random seed: ' + str(randomSeed) + '\n')
+resultsFile.write('BatchSize: ' + str(batchSize) + '\n')
 
 with open('../fastText/lemmaTagSkipWordVectors.vec', 'r') as vectorFile:
         vectors = dict()
@@ -145,11 +146,11 @@ def testModel(dataFile, encoder, decoder, lossFunction):
 	precision = true_Positives/(true_Positives+false_Positives)
 	recall = true_Positives/(true_Positives+false_Negatives)
 	f1 = 2 * precision*recall/(precision+recall)
-	resultsFile.write('Average loss: ' + str(avg_loss/fileSize))
-	resultsFile.write('Accuracy: ' + str((true_Positives + true_Negatives)/fileSize))
+	resultsFile.write('Average loss: ' + str(avg_loss/fileSize) + '\n')
+	resultsFile.write('Accuracy: ' + str((true_Positives + true_Negatives)/fileSize) + '\n')
 	#resultsFile.write('Precision: ', precision)
         #resultsFile.write('Recall: ', recall)
-	resultsFile.write('F1: ' + str(f1))
+	resultsFile.write('F1: ' + str(f1) + '\n') 
 	return f1
 
 encoder = EncoderLSTM(inputLength, hiddenLength)
@@ -173,7 +174,8 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 	trainingSize = fileSize - validationSize
 	trainingSet, validationSet = trainingSet[:trainingSize],trainingSet[trainingSize:]
 
-	validations = [0]
+	validations = []
+	testScores = []
         
 	for i in range(epochs):
 		encoder_optimizer.zero_grad()
@@ -205,10 +207,11 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 				current_loss = 0
 
 		random.shuffle(trainingSet)
-		resultsFile.write('epoch ' + str(i+1) + ' validation scores:')
+		resultsFile.write('epoch ' + str(i+1) + ' validation scores: \n')
 		currentValidation = testModel(validationSet, encoder, decoder, lossFunction)
+		validations.append(currentValidation)
 
-		if currentValidation >= validations[-1]:
+		if True:
 			with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdbTest:
 				testFileSize = int(ppdbTest.readline())
 				testSet = []
@@ -217,7 +220,9 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 					testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
 					testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
 					testSet[-1].append(int(ppdbTest.readline()))
-				resultsFile.write('epoch ' + str(i+1) + ' test scores:')
-				testModel(validationSet, encoder, decoder, lossFunction)
-		validations.append(currentValidation)
+				resultsFile.write('epoch ' + str(i+1) + ' test scores: \n')
+				testScore = testModel(testSet, encoder, decoder, lossFunction)
+				testScores.append(testScore)
+		resultsFile.write(str(validations)+'\n')
+		resultsFile.write(str(testScores)+'\n')
 resultsFile.close()
