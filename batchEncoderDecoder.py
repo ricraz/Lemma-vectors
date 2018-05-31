@@ -13,14 +13,14 @@ vectorLength = 100
 epochs = 50
 inputLength = 100
 hiddenLength = 300
-batchSize = 32
+batchSize = 64
 randomSeed = 0
 torch.manual_seed(randomSeed)
-resultsFile = open('lemmaTagWordResults2.txt', 'w')
+resultsFile = open('results/lemmaTaggedShuffledResults.txt', 'w')
 resultsFile.write('Random seed: ' + str(randomSeed) + '\n')
 resultsFile.write('BatchSize: ' + str(batchSize) + '\n')
 
-with open('../fastText/lemmaTagSkipWordVectors.vec', 'r') as vectorFile:
+with open('../vectors/lemmaTagVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
@@ -30,7 +30,7 @@ with open('../fastText/lemmaTagSkipWordVectors.vec', 'r') as vectorFile:
                 #        splitLine[i] = float(splitLine[i])
                 vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
-with open('../fastText/missingLemmaTagVectors.txt', 'r') as missingFile:
+with open('../vectors/missingLemmaTagVectors.txt', 'r') as missingFile:
 	for line in missingFile:
 		splitLine = line.split()
 		start = len(splitLine) - vectorLength
@@ -43,8 +43,13 @@ def getVector(line, vectors):
         for word in split:
                 if word in vectors:
                         output.append(vectors[word])                        
+                elif word[0] == '(':
+                        output.append(vectors['-lrb-'+word[1:]])
+                elif word[0] == ')':
+                        output.append(vectors['-rrb-'+word[1:]])
                 else:
                         print("Problem", word)
+                        print(line)
                         raise(ValueError)
                         #output.append(np.random.uniform(-1, 1, vectorLength)) #accounting for unknown vectors
         return output
@@ -161,7 +166,7 @@ decoder_optimizer = optim.Adam(decoder.parameters(), lr=1e-3)
 
 print('starting training')
 
-with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
+with open('ppdbShuffledLemmaTagTrain.txt','r') as ppdb:
 	fileSize = int(ppdb.readline())
 	trainingSet = []
 	for i in range(fileSize):
@@ -212,7 +217,7 @@ with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 		validations.append(currentValidation)
 
 		if True:
-			with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdbTest:
+			with open('ppdbShuffledLemmaTagTest.txt','r') as ppdbTest:
 				testFileSize = int(ppdbTest.readline())
 				testSet = []
 				for k in range(testFileSize):
