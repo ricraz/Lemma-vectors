@@ -10,17 +10,17 @@ import random
 import numpy as np
 
 vectorLength = 100
-epochs = 50
+epochs = 40
 inputLength = 100
 hiddenLength = 300
-batchSize = 64
+batchSize = 128
 randomSeed = 0
 torch.manual_seed(randomSeed)
-resultsFile = open('results/lemmaTaggedShuffledResults.txt', 'w')
+resultsFile = open('results/unlemmaTaggedShuffledResults2.txt', 'w')
 resultsFile.write('Random seed: ' + str(randomSeed) + '\n')
 resultsFile.write('BatchSize: ' + str(batchSize) + '\n')
 
-with open('../vectors/lemmaTagVectors.vec', 'r') as vectorFile:
+with open('../vectors/unlemmaTagVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
@@ -30,7 +30,7 @@ with open('../vectors/lemmaTagVectors.vec', 'r') as vectorFile:
                 #        splitLine[i] = float(splitLine[i])
                 vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
-with open('../vectors/missingLemmaTagVectors.txt', 'r') as missingFile:
+with open('../vectors/missingUnlemmaTagVectors.txt', 'r') as missingFile:
 	for line in missingFile:
 		splitLine = line.split()
 		start = len(splitLine) - vectorLength
@@ -166,7 +166,7 @@ decoder_optimizer = optim.Adam(decoder.parameters(), lr=1e-3)
 
 print('starting training')
 
-with open('ppdbShuffledLemmaTagTrain.txt','r') as ppdb:
+with open('ppdbShuffledUnlemmaTagTrain.txt','r') as ppdb:
 	fileSize = int(ppdb.readline())
 	trainingSet = []
 	for i in range(fileSize):
@@ -217,7 +217,7 @@ with open('ppdbShuffledLemmaTagTrain.txt','r') as ppdb:
 		validations.append(currentValidation)
 
 		if True:
-			with open('ppdbShuffledLemmaTagTest.txt','r') as ppdbTest:
+			with open('ppdbShuffledUnlemmaTagTest.txt','r') as ppdbTest:
 				testFileSize = int(ppdbTest.readline())
 				testSet = []
 				for k in range(testFileSize):
