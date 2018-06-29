@@ -3,7 +3,7 @@ import numpy as np
 vectorLength = 100
 
 tags = {'PDT': 'PT', '.':'.','VB':'VB', ':':':', '#':'#', 'VBN':'VN', 'RBR': 'RR', 'PRP$':'PR', 'DT': 'DT', 'VBZ': 'VZ', 'CC':'CC', 'TO':'TO', 'LS': 'LS', 'SYM':'SM', 'RBS': 'RS', 'JJ':'JJ', 'EX':'EX', 'WP':'WP', 'POS':'PS', 'WDT':'WT', 'VBP':'VP', 'WRB':'WB', 'PRP':'PP', 'JJR':'JR', 'VBD':'VD', 'NNPS':'NQ', 'RB':'RB','-LRB':'L$', 'RP':'RP', 'JJS':'JS', 'CD':'CD', '-RRB-':'R$', 'NNP': 'NP', '$':'$', 'WP$':'WP', 'FW':'FW', 'VBG':'VG',"''":"''", ',':',', 'NN':'NN','UH':'UH', 'NNS':'NS', 'MD':'MD', '``':'``','IN':'IN'}
-with open('../vectors/unlemmaUntaggedWordVectors.vec', 'r') as vectorFile:
+with open('../vectors/unlemmaTagWordVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
@@ -16,8 +16,8 @@ with open('../vectors/unlemmaUntaggedWordVectors.vec', 'r') as vectorFile:
 count = 0
 
 missingWords = set()
-with open('missingPPDBUnlemmaUntaggedWords.txt', 'w') as writeFile:
-        with open('ppdbLargeFilteredTrain.txt', 'r') as wordFile:
+with open('missing/missingUNLEMMATAGGED.txt', 'w') as writeFile:
+        with open('unlemmaTagPPDBTrain.txt', 'r') as wordFile:
                 size = int(wordFile.readline())
                 for i in range(size):
                         splits = wordFile.readline()[:-1].split()
@@ -39,7 +39,7 @@ with open('missingPPDBUnlemmaUntaggedWords.txt', 'w') as writeFile:
                                         count += 1
                         wordFile.readline()
 
-        with open('ppdbLargeFilteredTest.txt', 'r') as wordFile:
+        with open('unlemmaTagPPDBTest.txt', 'r') as wordFile:
                 size = int(wordFile.readline())
                 for i in range(size):
                         splits = wordFile.readline()[:-1].split()

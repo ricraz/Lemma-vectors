@@ -11,18 +11,25 @@ import random
 import numpy as np
 
 vectorLength = 100
-epochs = 50
+embeddingLen = 110
+epochs = 32
 inputLength = 100
 hiddenLength = 300
 MAX_LENGTH = 7
 batchSize = 64
 randomSeed = 0
 torch.manual_seed(randomSeed)
-resultsFile = open('results/unlemmaUntaggedShuffledAttention.txt', 'w')
+resultsFile = open('results/lemmaConcatAttention2.txt', 'w')
 resultsFile.write('Random seed: ' + str(randomSeed) + '\n')
 resultsFile.write('BatchSize: ' + str(batchSize) + '\n')
 
-with open('../vectors/unlemmaUntaggedVectors.vec', 'r') as vectorFile:
+
+tags = {'PDT': 'PT', '.': '.', 'VB': 'VB', ':': ':', '#': '#', 'VBN': 'VN', 'RBR': 'RR', 'PRP$': 'PR', 'DT': 'DT', 'VBZ': 'VZ', 'CC': 'CC', 'TO': 'TO', 'LS': 'LS', 'SYM': 'SM', 'RBS': 'RS', 'JJ': 'JJ', 'EX': 'EX', 'WP': 'WP', 'POS': 'PS', 'WDT': 'WT', 'VBP': 'VP', 'WRB': 'WB', 'PRP': 'PP', 'JJR': 'JR', 'VBD': 'VD', 'NNPS': 'NQ', 'RB': 'RB', '-LRB-': 'L$', 'RP': 'RP', 'JJS': 'JS', 'CD': 'CD', '-RRB-': 'R$', 'NNP': 'NP', '$': '$', 'WP$': 'WP', 'FW': 'FW', 'VBG': 'VG', "''": "''", ',': ',', 'NN': 'NN', 'UH': 'UH', 'NNS': 'NS', 'MD': 'MD', '``': '``', 'IN': 'IN'}
+inverseTags = dict()
+for key, item in tags.items():
+	inverseTags[item] = key
+
+with open('../vectors/lemmaUntaggedVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
@@ -32,28 +39,35 @@ with open('../vectors/unlemmaUntaggedVectors.vec', 'r') as vectorFile:
                 #        splitLine[i] = float(splitLine[i])
                 vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
-with open('../vectors/missingUnlemmaUntaggedVectors.txt', 'r') as missingFile:
+with open('../vectors/missingLemmaUntaggedVectors.txt', 'r') as missingFile:
 	for line in missingFile:
 		splitLine = line.split()
 		start = len(splitLine) - vectorLength
 		if " ".join(splitLine[0:start]) not in vectors:
                         vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
+with open('../vectors/tagWordVectors.vec','r') as tagFile:
+	tagVectors = dict()
+	tagFile.readline()
+	for line in tagFile:
+		splitLine = line.split()
+		tagVectors[splitLine[0]] = np.array(splitLine[1:], dtype=float)
+	
 def getVector(line, vectors):
         output = []
         split = line.split()
         for word in split:
-                if word in vectors:
-                        output.append(vectors[word])                        
-                elif word[0] == '(':
-                        output.append(vectors['-lrb-'+word[1:]])
+                tempWord = word
+                if word[0] == '(':
+                        tempWord = '-lrb-'+word[1:]
                 elif word[0] == ')':
-                        output.append(vectors['-rrb-'+word[1:]])
+                        tempWord = '-rrb-'+word[1:]
+                
+                if tempWord[-2] == '_':
+#                        if tempWord[:-2] in vectors:
+                        output.append(np.concatenate((vectors[tempWord[:-2]],tagVectors[inverseTags[tempWord[-1]]])))
                 else:
-                        print("Problem", word)
-                        print(line)
-                        raise(ValueError)
-                        #output.append(np.random.uniform(-1, 1, vectorLength)) #accounting for unknown vectors
+                        output.append(np.concatenate((vectors[tempWord[:-3]],tagVectors[inverseTags[tempWord[-2:]]])))
         return output
 
 class EncoderLSTM(torch.nn.Module):
@@ -167,8 +181,8 @@ def evaluate(encoder, decoder, input1, input2, max_length = MAX_LENGTH):
 
 	return decoder_output
 
-encoder = EncoderLSTM(inputLength, hiddenLength)
-decoder = AttentionDecoderLSTM(inputLength, hiddenLength)
+encoder = EncoderLSTM(embeddingLen, hiddenLength)
+decoder = AttentionDecoderLSTM(embeddingLen, hiddenLength)
 loss_function = nn.NLLLoss(size_average=False)
 encoder_optimizer = optim.Adam(encoder.parameters(), lr=1e-3)
 decoder_optimizer = optim.Adam(decoder.parameters(), lr=1e-3)
@@ -213,7 +227,7 @@ def testModel(dataFile, encoder, decoder, loss_function):
 	resultsFile.write('F1: ' + str(f1) + '\n') 
 	return f1
 
-with open('ppdbShuffledUnlemmaUntaggedTrain.txt','r') as ppdb:
+with open('ppdbLargeFilteredLemmaTagTrain.txt','r') as ppdb:
 	fileSize = int(ppdb.readline())
 	trainingSet = []
 	for i in range(fileSize):
@@ -263,7 +277,7 @@ with open('ppdbShuffledUnlemmaUntaggedTrain.txt','r') as ppdb:
 		currentValidation = testModel(validationSet, encoder, decoder, loss_function)
 		validations.append(currentValidation)
 
-		with open('ppdbShuffledUnlemmaUntaggedTest.txt','r') as ppdbTest:
+		with open('ppdbLargeFilteredLemmaTagTest.txt','r') as ppdbTest:
 			testFileSize = int(ppdbTest.readline())
 			testSet = []
 			for k in range(testFileSize):

@@ -7,22 +7,22 @@ from torch import optim
 import torch.nn.functional as F
 import pickle
 import random
-
+from scipy.stats import spearmanr
 import numpy as np
 
 vectorLength = 100
-epochs = 50
+epochs = 2000
 inputLength = 100
 hiddenLength = 300
 MAX_LENGTH = 7
 batchSize = 64
 randomSeed = 0
 torch.manual_seed(randomSeed)
-resultsFile = open('results/unlemmaUntaggedShuffledAttention.txt', 'w')
+resultsFile = open('results3/lemmaUntaggedAttention.txt', 'w')
 resultsFile.write('Random seed: ' + str(randomSeed) + '\n')
 resultsFile.write('BatchSize: ' + str(batchSize) + '\n')
 
-with open('../vectors/unlemmaUntaggedVectors.vec', 'r') as vectorFile:
+with open('../vectors/lemmaUntaggedVectors.vec', 'r') as vectorFile:
         vectors = dict()
         vectorFile.readline()
         for line in vectorFile:
@@ -32,7 +32,7 @@ with open('../vectors/unlemmaUntaggedVectors.vec', 'r') as vectorFile:
                 #        splitLine[i] = float(splitLine[i])
                 vectors[" ".join(splitLine[0:start])] = np.array(splitLine[start:], dtype = float)
 
-with open('../vectors/missingUnlemmaUntaggedVectors.txt', 'r') as missingFile:
+with open('missing/missingLEMMAUNTAGGEDVectors.txt', 'r') as missingFile:
 	for line in missingFile:
 		splitLine = line.split()
 		start = len(splitLine) - vectorLength
@@ -82,8 +82,8 @@ class AttentionDecoderLSTM(torch.nn.Module):
             self.attention_combine = nn.Linear(hidden_dim+embedding_dim, self.hidden_dim)
             self.dropout = nn.Dropout(self.dropout_p)
             self.lstm = nn.LSTM(hidden_dim, hidden_dim)
-            self.linearOut = nn.Linear(hidden_dim, 2)
-            self.softmax = nn.LogSoftmax()
+            self.linearOut = nn.Linear(hidden_dim, 1)
+            self.sigmoidOut = nn.Sigmoid()
 
     def forward(self,inputs,hidden,encoder_outputs):
             embedded = inputs.view(1,1,-1)
@@ -99,7 +99,7 @@ class AttentionDecoderLSTM(torch.nn.Module):
             #print("three more")
             output, hidden = self.lstm(output, hidden)
             #print("LSTM WORKED!")
-            output = F.log_softmax(self.linearOut(output[-1]))
+            output = self.sigmoidOut(self.linearOut(output[-1]))
             return output, hidden, attention_weights
 
     #def init_hidden(self):
@@ -134,7 +134,7 @@ def train(accum, input1, input2, target_tensor, encoder, decoder, encoder_optimi
             decoder_output, decoder_hidden, decoder_attention = decoder(
                 input2[di], decoder_hidden, encoder_outputs)
             
-    loss = loss_function(decoder_output, target_tensor)
+    loss = loss_function(decoder_output, target_tensor.view(1,1))
     
     #loss.backward()
 
@@ -169,7 +169,7 @@ def evaluate(encoder, decoder, input1, input2, max_length = MAX_LENGTH):
 
 encoder = EncoderLSTM(inputLength, hiddenLength)
 decoder = AttentionDecoderLSTM(inputLength, hiddenLength)
-loss_function = nn.NLLLoss(size_average=False)
+loss_function = nn.MSELoss(size_average=False)
 encoder_optimizer = optim.Adam(encoder.parameters(), lr=1e-3)
 decoder_optimizer = optim.Adam(decoder.parameters(), lr=1e-3)
 
@@ -177,50 +177,37 @@ print('starting training')
 
 def testModel(dataFile, encoder, decoder, loss_function):
 	avg_loss = 0.0
-	true_Positives = 0
-	false_Positives = 0
-	false_Negatives = 0
-	true_Negatives = 0
+	spearman = []
+	targetVec = []
 	fileSize = len(dataFile)
 	for j in range(fileSize):
 		input1 = Variable(torch.Tensor(dataFile[j][0]))
 		input2 = Variable(torch.Tensor(dataFile[j][1]))
 		target = dataFile[j][2]
-		target_tensor = Variable(torch.LongTensor([target]))
+		target_tensor = Variable(torch.Tensor([target]))
 		output = evaluate(encoder, decoder, input1, input2)
-		loss = loss_function(output, target_tensor)
-		avg_loss += loss.data[0]
+		spearman.append(output.item())
+		targetVec.append(target)
 
-		bigger = (output[0][1] > output[0][0]).data.numpy()
-		if target==1:
-			if bigger:
-				true_Positives += 1
-			else:
-				false_Negatives += 1
-		else:
-			if bigger:
-				false_Positives += 1
-			else:
-				true_Negatives += 1
+		loss = loss_function(output, target_tensor.view(1,1))
+		avg_loss += loss.item()
+	spearmansR = spearmanr(spearman, targetVec)
+	print(spearmansR)
 
-	precision = true_Positives/(true_Positives+false_Positives)
-	recall = true_Positives/(true_Positives+false_Negatives)
-	f1 = 2 * precision*recall/(precision+recall)
 	resultsFile.write('Average loss: ' + str(avg_loss/fileSize) + '\n')
-	resultsFile.write('Accuracy: ' + str((true_Positives + true_Negatives)/fileSize) + '\n')
+	resultsFile.write('Spearman: ' + str(spearmansR[0]) + '\n')
 	#resultsFile.write('Precision: ', precision)
-        #resultsFile.write('Recall: ', recall)
-	resultsFile.write('F1: ' + str(f1) + '\n') 
-	return f1
+        #resultsFile.write('Recall: ', rec
+	return spearmansR[0]
 
-with open('ppdbShuffledUnlemmaUntaggedTrain.txt','r') as ppdb:
+with open('lemmaUntaggedPPDBTrain.txt','r') as ppdb:
 	fileSize = int(ppdb.readline())
 	trainingSet = []
 	for i in range(fileSize):
 		trainingSet.append([])
 		trainingSet[-1].append(getVector(ppdb.readline()[:-1],vectors))
 		trainingSet[-1].append(getVector(ppdb.readline()[:-1],vectors))
-		trainingSet[-1].append(int(ppdb.readline()))
+		trainingSet[-1].append(((float(ppdb.readline())-1)/4))
 	
 	validationSize = fileSize//10
 	trainingSize = fileSize - validationSize
@@ -239,7 +226,7 @@ with open('ppdbShuffledUnlemmaUntaggedTrain.txt','r') as ppdb:
 			input1 = Variable(torch.Tensor(trainingSet[j][0]))
 			input2 = Variable(torch.Tensor(trainingSet[j][1]))
 
-			target_tensor = Variable(torch.LongTensor([trainingSet[j][2]]))
+			target_tensor = Variable(torch.Tensor([trainingSet[j][2]]))
 
 			loss = train(j%batchSize, input1, input2, target_tensor, encoder, decoder, encoder_optimizer, decoder_optimizer, loss_function)
 
@@ -263,18 +250,17 @@ with open('ppdbShuffledUnlemmaUntaggedTrain.txt','r') as ppdb:
 		currentValidation = testModel(validationSet, encoder, decoder, loss_function)
 		validations.append(currentValidation)
 
-		with open('ppdbShuffledUnlemmaUntaggedTest.txt','r') as ppdbTest:
+		with open('lemmaUntaggedPPDBTest.txt','r') as ppdbTest:
 			testFileSize = int(ppdbTest.readline())
 			testSet = []
 			for k in range(testFileSize):
 				testSet.append([])
 				testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
 				testSet[-1].append(getVector(ppdbTest.readline()[:-1],vectors))
-				testSet[-1].append(int(ppdbTest.readline()))
+				testSet[-1].append(((float(ppdbTest.readline())-1)/4))
 			resultsFile.write('epoch ' + str(i+1) + ' test scores: \n')
 			testScore = testModel(testSet, encoder, decoder, loss_function)
 			testScores.append(testScore)
 		resultsFile.write(str(validations)+'\n')
 		resultsFile.write(str(testScores)+'\n')
 resultsFile.close()
-
